@@ -1,3 +1,5 @@
+import { File } from 'expo-file-system';
+
 import { ELEVENLABS_API_KEY } from '@/lib/voice-config';
 
 export class SttApiError extends Error {
@@ -11,11 +13,7 @@ export class SttApiError extends Error {
 
 export async function transcribeAudio(fileUri: string): Promise<string> {
   const formData = new FormData();
-  formData.append('file', {
-    uri: fileUri,
-    name: 'recording.m4a',
-    type: 'audio/m4a',
-  } as unknown as Blob);
+  formData.append('file', new File(fileUri));
   formData.append('model_id', 'scribe_v2');
   formData.append('language_code', 'en');
 

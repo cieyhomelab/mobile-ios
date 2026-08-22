@@ -1,5 +1,9 @@
 import { SttApiError, transcribeAudio } from './voice-stt';
 
+jest.mock('expo-file-system', () => ({
+  File: jest.fn().mockImplementation((uri: string) => ({ uri })),
+}));
+
 class MockFormData {
   parts: [string, unknown][] = [];
 
@@ -43,11 +47,7 @@ describe('transcribeAudio', () => {
     const body = (global.fetch as jest.Mock).mock.calls[0][1].body as MockFormData;
     expect(body.get('model_id')).toBe('scribe_v2');
     expect(body.get('language_code')).toBe('en');
-    expect(body.get('file')).toEqual({
-      uri: 'file:///tmp/recording.m4a',
-      name: 'recording.m4a',
-      type: 'audio/m4a',
-    });
+    expect(body.get('file')).toEqual({ uri: 'file:///tmp/recording.m4a' });
 
     expect(result).toBe('Book a meeting tomorrow at 3pm');
   });
