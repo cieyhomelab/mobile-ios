@@ -277,17 +277,17 @@ None — additive feature, no existing data or schema changes.
 
 #### Automated
 
-- [x] 2.1 Unit tests pass: `npm test`
-- [x] 2.2 Type checking passes: `npx tsc --noEmit`
-- [x] 2.3 Linting passes: `npm run lint`
+- [x] 2.1 Unit tests pass: `npm test` — 11640b5
+- [x] 2.2 Type checking passes: `npx tsc --noEmit` — 11640b5
+- [x] 2.3 Linting passes: `npm run lint` — 11640b5
 
 ### Phase 3: Events → spoken-text formatter
 
 #### Automated
 
-- [ ] 3.1 Unit tests pass: `npm test`
-- [ ] 3.2 Type checking passes: `npx tsc --noEmit`
-- [ ] 3.3 Linting passes: `npm run lint`
+- [x] 3.1 Unit tests pass: `npm test`
+- [x] 3.2 Type checking passes: `npx tsc --noEmit`
+- [x] 3.3 Linting passes: `npm run lint`
 
 ### Phase 4: ElevenLabs TTS client + local playback file
 
