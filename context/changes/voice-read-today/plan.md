@@ -265,21 +265,21 @@ None — additive feature, no existing data or schema changes.
 
 #### Automated
 
-- [x] 1.1 Dependencies install cleanly: `npm install`
-- [x] 1.2 Type checking passes: `npx tsc --noEmit`
-- [x] 1.3 Linting passes: `npm run lint`
+- [x] 1.1 Dependencies install cleanly: `npm install` — 73a9c0c
+- [x] 1.2 Type checking passes: `npx tsc --noEmit` — 73a9c0c
+- [x] 1.3 Linting passes: `npm run lint` — 73a9c0c
 
 #### Manual
 
-- [x] 1.4 `expo-file-system`'s `File`/`Paths` exports are importable without a Metro bundling error.
+- [x] 1.4 `expo-file-system`'s `File`/`Paths` exports are importable without a Metro bundling error. — 73a9c0c
 
 ### Phase 2: Today-scoped Calendar API query
 
 #### Automated
 
-- [ ] 2.1 Unit tests pass: `npm test`
-- [ ] 2.2 Type checking passes: `npx tsc --noEmit`
-- [ ] 2.3 Linting passes: `npm run lint`
+- [x] 2.1 Unit tests pass: `npm test`
+- [x] 2.2 Type checking passes: `npx tsc --noEmit`
+- [x] 2.3 Linting passes: `npm run lint`
 
 ### Phase 3: Events → spoken-text formatter
 

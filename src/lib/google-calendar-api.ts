@@ -2,6 +2,7 @@ export type CalendarEvent = {
   id: string;
   summary: string;
   start: string;
+  allDay?: boolean;
 };
 
 type CalendarEventsListResponse = {
@@ -80,6 +81,37 @@ export async function findConflictingEvents(
     id: item.id,
     summary: item.summary ?? '(no title)',
     start: item.start?.dateTime ?? item.start?.date ?? '',
+  }));
+}
+
+export async function listTodayEvents(accessToken: string): Promise<CalendarEvent[]> {
+  const now = new Date();
+  const timeMin = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+  const timeMax = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 23, 59, 59, 999);
+
+  const params = new URLSearchParams({
+    timeMin: timeMin.toISOString(),
+    timeMax: timeMax.toISOString(),
+    singleEvents: 'true',
+    orderBy: 'startTime',
+  });
+
+  const response = await fetch(
+    `https://www.googleapis.com/calendar/v3/calendars/primary/events?${params.toString()}`,
+    { headers: { Authorization: `Bearer ${accessToken}` } },
+  );
+
+  if (!response.ok) {
+    throw new CalendarApiError(response.status);
+  }
+
+  const data: CalendarEventsListResponse = await response.json();
+
+  return (data.items ?? []).map((item) => ({
+    id: item.id,
+    summary: item.summary ?? '(no title)',
+    start: item.start?.dateTime ?? item.start?.date ?? '',
+    allDay: item.start?.dateTime === undefined,
   }));
 }
 
