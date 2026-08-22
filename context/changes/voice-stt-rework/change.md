@@ -1,7 +1,7 @@
 ---
 change_id: voice-stt-rework
 title: Voice stt rework
-status: planned
+status: implementing
 created: 2026-08-22
 updated: 2026-08-22
 archived_at: null

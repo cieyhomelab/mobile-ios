@@ -274,23 +274,23 @@ Greenfield rework of an already-shipped feature — no user data to migrate. `sr
 
 #### Automated
 
-- [x] 1.1 Dependencies install cleanly: `npm install`
-- [x] 1.2 Type checking passes: `npx tsc --noEmit`
-- [x] 1.3 Linting passes: `npm run lint`
-- [x] 1.4 Existing tests still pass: `npm test`
+- [x] 1.1 Dependencies install cleanly: `npm install` — 5b848f6
+- [x] 1.2 Type checking passes: `npx tsc --noEmit` — 5b848f6
+- [x] 1.3 Linting passes: `npm run lint` — 5b848f6
+- [x] 1.4 Existing tests still pass: `npm test` — 5b848f6
 
 #### Manual
 
-- [x] 1.5 `npx expo prebuild --clean && npm run ios` builds and launches a dev client successfully with LiveKit/Picovoice native modules gone and `expo-audio` linked
-- [x] 1.6 Launching the app on-device prompts for microphone permission with the updated description text
+- [x] 1.5 `npx expo prebuild --clean && npm run ios` builds and launches a dev client successfully with LiveKit/Picovoice native modules gone and `expo-audio` linked — 5b848f6
+- [x] 1.6 Launching the app on-device prompts for microphone permission with the updated description text — 5b848f6
 
 ### Phase 2: ElevenLabs Speech-to-Text client
 
 #### Automated
 
-- [ ] 2.1 Unit tests pass: `npm test`
-- [ ] 2.2 Type checking passes: `npx tsc --noEmit`
-- [ ] 2.3 Linting passes: `npm run lint`
+- [x] 2.1 Unit tests pass: `npm test`
+- [x] 2.2 Type checking passes: `npx tsc --noEmit`
+- [x] 2.3 Linting passes: `npm run lint`
 
 ### Phase 3: Transcript → structured event parser
 
