@@ -20,6 +20,10 @@ export type GoogleCalendarSession = {
   forceSignOut: () => Promise<void>;
 };
 
+// TEMP DEBUG: forces the signed-in UI for local simulator testing without real Google OAuth.
+// Remove before committing.
+const DEBUG_FORCE_SIGNED_IN = false;
+
 export function useGoogleCalendarSession(): GoogleCalendarSession {
   const [state, setState] = useState<GoogleCalendarSessionState>('loading');
   const [accessToken, setAccessToken] = useState<string | null>(null);
@@ -83,6 +87,17 @@ export function useGoogleCalendarSession(): GoogleCalendarSession {
     setAccessToken(null);
     setState('signedOut');
   }, []);
+
+  if (DEBUG_FORCE_SIGNED_IN) {
+    return {
+      state: 'signedIn',
+      accessToken: 'debug-fake-token',
+      error: null,
+      isConnecting: false,
+      handleConnect: async () => {},
+      forceSignOut: async () => {},
+    };
+  }
 
   return { state, accessToken, error, isConnecting, handleConnect, forceSignOut };
 }

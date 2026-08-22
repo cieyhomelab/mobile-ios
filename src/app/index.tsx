@@ -1,4 +1,4 @@
-import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
+import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
@@ -38,6 +38,10 @@ function VoiceScreen() {
   const [draft, setDraft] = useState<DraftEvent | null>(null);
   const [pipelineError, setPipelineError] = useState<string | null>(null);
   const [resultMessage, setResultMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    void setAudioModeAsync({ playsInSilentMode: true });
+  }, []);
 
   useEffect(() => {
     if (phase !== 'speakingToday' || !playerStatus.didJustFinish) return;
