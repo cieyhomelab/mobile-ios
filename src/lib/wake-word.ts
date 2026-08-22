@@ -1,0 +1,62 @@
+import { useCallback, useEffect, useRef } from 'react';
+import { BuiltInKeywords, PorcupineErrors, PorcupineManager } from '@picovoice/porcupine-react-native';
+
+import { PICOVOICE_ACCESS_KEY } from '@/lib/voice-config';
+
+// Stand-in for a custom Picovoice Console wake word (no .ppn asset is bundled yet).
+// Swap for `PorcupineManager.fromKeywordPaths(...)` once a custom keyword is available.
+const WAKE_WORD = BuiltInKeywords.JARVIS;
+
+export type WakeWordListener = {
+  start(): Promise<void>;
+  stop(): Promise<void>;
+};
+
+export function useWakeWordListener(onWake: () => void): WakeWordListener {
+  const managerRef = useRef<PorcupineManager | null>(null);
+  const managerPromiseRef = useRef<Promise<PorcupineManager> | null>(null);
+  const onWakeRef = useRef(onWake);
+
+  useEffect(() => {
+    onWakeRef.current = onWake;
+  }, [onWake]);
+
+  useEffect(() => {
+    return () => {
+      managerRef.current?.stop();
+      managerRef.current?.delete();
+      managerRef.current = null;
+      managerPromiseRef.current = null;
+    };
+  }, []);
+
+  const getManager = useCallback(async (): Promise<PorcupineManager> => {
+    if (managerRef.current) return managerRef.current;
+    if (!managerPromiseRef.current) {
+      managerPromiseRef.current = PorcupineManager.fromBuiltInKeywords(
+        PICOVOICE_ACCESS_KEY,
+        [WAKE_WORD],
+        () => onWakeRef.current()
+      );
+    }
+    const manager = await managerPromiseRef.current;
+    managerRef.current = manager;
+    return manager;
+  }, []);
+
+  const start = useCallback(async () => {
+    const manager = await getManager();
+    await manager.start();
+  }, [getManager]);
+
+  const stop = useCallback(async () => {
+    if (!managerRef.current) return;
+    try {
+      await managerRef.current.stop();
+    } catch (err) {
+      if (!(err instanceof PorcupineErrors.PorcupineInvalidStateError)) throw err;
+    }
+  }, []);
+
+  return { start, stop };
+}

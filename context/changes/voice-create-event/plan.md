@@ -316,22 +316,22 @@ None — greenfield feature, no existing data or users to migrate.
 
 #### Automated
 
-- [x] 2.1 Unit tests pass: `npm test -- --watchAll=false`
-- [x] 2.2 Type checking passes: `npx tsc --noEmit`
-- [x] 2.3 Linting passes: `npm run lint`
+- [x] 2.1 Unit tests pass: `npm test -- --watchAll=false` — b04dbbc
+- [x] 2.2 Type checking passes: `npx tsc --noEmit` — b04dbbc
+- [x] 2.3 Linting passes: `npm run lint` — b04dbbc
 
 ### Phase 3: Wake-word listener (Porcupine)
 
 #### Automated
 
-- [ ] 3.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 3.2 Linting passes: `npm run lint`
+- [x] 3.1 Type checking passes: `npx tsc --noEmit`
+- [x] 3.2 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 3.3 Opening the app's Home screen (signed in) begins wake-word listening automatically, with no additional tap
-- [ ] 3.4 Saying the configured wake word fires the `onWake` callback reliably in a quiet room
-- [ ] 3.5 Backgrounding the app stops draining the mic/battery unexpectedly (foreground-only scope holds)
+- [x] 3.3 Opening the app's Home screen (signed in) begins wake-word listening automatically, with no additional tap
+- [x] 3.4 Saying the configured wake word fires the `onWake` callback reliably in a quiet room
+- [x] 3.5 Backgrounding the app stops draining the mic/battery unexpectedly (foreground-only scope holds)
 
 ### Phase 4: ElevenLabs session + tool wiring + screen replacement
 
