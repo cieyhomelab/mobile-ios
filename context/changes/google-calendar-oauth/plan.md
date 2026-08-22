@@ -77,6 +77,8 @@ Get `@react-native-google-signin/google-signin` installed, configured, and linke
 
 **Contract**: Add `"bundleIdentifier": "com.mkulesza.voiceassistant"` under the existing `"ios"` object.
 
+**Addendum (post-implementation, impl-review F2)**: The Phase 1 commit also set `"package": "com.mkulesza.voiceassistant"` under the existing `"android"` object, mirroring the iOS identifier. This wasn't part of the original contract — Android is out of scope for this Foundation (see "What We're NOT Doing") — but it's inert without a matching Android OAuth client and consistent to leave as-is.
+
 #### 3. `app.json` — config plugin
 
 **File**: `app.json`

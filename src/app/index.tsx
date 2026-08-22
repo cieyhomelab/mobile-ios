@@ -20,6 +20,7 @@ export default function HomeScreen() {
   const [state, setState] = useState<ScreenState>('loading');
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [error, setError] = useState<string | null>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
 
   const loadEvents = useCallback(async (accessToken: string) => {
     try {
@@ -30,9 +31,12 @@ export default function HomeScreen() {
     } catch (err) {
       if (err instanceof CalendarApiError && err.status === 401) {
         await signOutLocally();
+        setEvents([]);
+        setState('signedOut');
+        return;
       }
-      setEvents([]);
-      setState('signedOut');
+      setError("Couldn't refresh events");
+      setState((prev) => (prev === 'signedIn' ? 'signedIn' : 'signedOut'));
     }
   }, []);
 
@@ -54,14 +58,20 @@ export default function HomeScreen() {
   }, [loadEvents]);
 
   const handleConnect = useCallback(async () => {
+    if (isConnecting) return;
+    setIsConnecting(true);
     setError(null);
-    const result = await signInInteractively();
-    if ('error' in result) {
-      setError(result.error);
-      return;
+    try {
+      const result = await signInInteractively();
+      if ('error' in result) {
+        setError(result.error);
+        return;
+      }
+      await loadEvents(result.accessToken);
+    } finally {
+      setIsConnecting(false);
     }
-    await loadEvents(result.accessToken);
-  }, [loadEvents]);
+  }, [isConnecting, loadEvents]);
 
   return (
     <ThemedView style={styles.container}>
@@ -75,10 +85,13 @@ export default function HomeScreen() {
         {state === 'signedOut' && (
           <>
             <Pressable
+              disabled={isConnecting}
               style={({ pressed }) => pressed && styles.pressed}
               onPress={() => void handleConnect()}>
               <ThemedView type="backgroundSelected" style={styles.button}>
-                <ThemedText type="default">Connect Google Calendar</ThemedText>
+                <ThemedText type="default">
+                  {isConnecting ? 'Connecting…' : 'Connect Google Calendar'}
+                </ThemedText>
               </ThemedView>
             </Pressable>
             {error !== null && <ThemedText type="small">{error}</ThemedText>}
@@ -86,17 +99,20 @@ export default function HomeScreen() {
         )}
 
         {state === 'signedIn' && (
-          <ThemedView type="backgroundElement" style={styles.eventList}>
-            {events.length === 0 && <ThemedText type="small">No upcoming events</ThemedText>}
-            {events.map((event) => (
-              <ThemedView key={event.id} style={styles.eventRow}>
-                <ThemedText type="default">{event.summary}</ThemedText>
-                <ThemedText type="small" themeColor="textSecondary">
-                  {event.start}
-                </ThemedText>
-              </ThemedView>
-            ))}
-          </ThemedView>
+          <>
+            {error !== null && <ThemedText type="small">{error}</ThemedText>}
+            <ThemedView type="backgroundElement" style={styles.eventList}>
+              {events.length === 0 && <ThemedText type="small">No upcoming events</ThemedText>}
+              {events.map((event) => (
+                <ThemedView key={event.id} style={styles.eventRow}>
+                  <ThemedText type="default">{event.summary}</ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary">
+                    {event.start}
+                  </ThemedText>
+                </ThemedView>
+              ))}
+            </ThemedView>
+          </>
         )}
       </SafeAreaView>
     </ThemedView>
