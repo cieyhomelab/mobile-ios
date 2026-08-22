@@ -15,6 +15,7 @@ export type WakeWordListener = {
 export function useWakeWordListener(onWake: () => void): WakeWordListener {
   const managerRef = useRef<PorcupineManager | null>(null);
   const managerPromiseRef = useRef<Promise<PorcupineManager> | null>(null);
+  const startPromiseRef = useRef<Promise<void> | null>(null);
   const onWakeRef = useRef(onWake);
 
   useEffect(() => {
@@ -23,10 +24,18 @@ export function useWakeWordListener(onWake: () => void): WakeWordListener {
 
   useEffect(() => {
     return () => {
-      managerRef.current?.stop();
-      managerRef.current?.delete();
+      const manager = managerRef.current;
       managerRef.current = null;
       managerPromiseRef.current = null;
+      void (async () => {
+        try {
+          await manager?.stop();
+        } catch (err) {
+          if (!(err instanceof PorcupineErrors.PorcupineInvalidStateError)) throw err;
+        } finally {
+          manager?.delete();
+        }
+      })();
     };
   }, []);
 
@@ -45,8 +54,15 @@ export function useWakeWordListener(onWake: () => void): WakeWordListener {
   }, []);
 
   const start = useCallback(async () => {
-    const manager = await getManager();
-    await manager.start();
+    if (startPromiseRef.current) return startPromiseRef.current;
+    const promise = (async () => {
+      const manager = await getManager();
+      await manager.start();
+    })().finally(() => {
+      startPromiseRef.current = null;
+    });
+    startPromiseRef.current = promise;
+    return promise;
   }, [getManager]);
 
   const stop = useCallback(async () => {

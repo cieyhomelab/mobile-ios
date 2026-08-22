@@ -13,6 +13,7 @@ import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useGoogleCalendarSession } from '@/hooks/use-google-calendar-session';
 import { handleCreateEventTool } from '@/lib/create-event-tool';
+import { DraftEvent } from '@/lib/google-calendar-api';
 import { ELEVENLABS_AGENT_ID } from '@/lib/voice-config';
 import { useWakeWordListener, WakeWordListener } from '@/lib/wake-word';
 
@@ -33,7 +34,7 @@ function VoiceScreen() {
   const suppressAutoResumeRef = useRef(false);
 
   const handleCreateEvent = useCallback(
-    (params: { title: string; startDateTime: string; durationMinutes?: number }) =>
+    (params: DraftEvent) =>
       handleCreateEventTool(params, () => {
         suppressAutoResumeRef.current = true;
         endSession();

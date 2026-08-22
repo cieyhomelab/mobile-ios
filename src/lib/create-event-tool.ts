@@ -1,12 +1,8 @@
 import { getAccessToken, signOutLocally } from './google-calendar-auth';
-import { CalendarApiError, createEvent, findConflictingEvents } from './google-calendar-api';
+import { CalendarApiError, createEvent, DraftEvent, findConflictingEvents } from './google-calendar-api';
 
 export async function handleCreateEventTool(
-  params: {
-    title: string;
-    startDateTime: string;
-    durationMinutes?: number;
-  },
+  params: DraftEvent,
   onUnauthorized?: () => void,
 ): Promise<string> {
   const accessToken = await getAccessToken();
@@ -14,12 +10,12 @@ export async function handleCreateEventTool(
     return 'Unable to access your calendar right now. Please try again.';
   }
 
-  const durationMinutes = params.durationMinutes ?? 60;
-  const endDateTime = new Date(
-    new Date(params.startDateTime).getTime() + durationMinutes * 60_000,
-  ).toISOString();
-
   try {
+    const durationMinutes = params.durationMinutes ?? 60;
+    const endDateTime = new Date(
+      new Date(params.startDateTime).getTime() + durationMinutes * 60_000,
+    ).toISOString();
+
     const conflicts = await findConflictingEvents(accessToken, params.startDateTime, endDateTime);
     if (conflicts.length > 0) {
       return `That time conflicts with an existing event, "${conflicts[0].summary}". Should I create it anyway or pick a different time?`;
