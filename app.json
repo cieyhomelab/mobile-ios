@@ -1,7 +1,7 @@
 {
   "expo": {
     "name": ".bootstrap-scaffold",
-    "slug": ".bootstrap-scaffold",
+    "slug": "bootstrap-scaffold",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -22,7 +22,13 @@
         "monochromeImage": "./assets/images/android-icon-monochrome.png"
       },
       "predictiveBackGestureEnabled": false,
-      "package": "com.mkulesza.voiceassistant"
+      "package": "com.mkulesza.voiceassistant",
+      "permissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS",
+        "android.permission.FOREGROUND_SERVICE",
+        "android.permission.FOREGROUND_SERVICE_MEDIA_PLAYBACK"
+      ]
     },
     "web": {
       "output": "static",
@@ -54,6 +60,13 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
-    }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "39e2fc94-9b99-4c89-9a5b-4020d9d44253"
+      }
+    },
+    "owner": "maciej.kulesza"
   }
 }
