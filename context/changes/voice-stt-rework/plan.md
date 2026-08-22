@@ -296,22 +296,22 @@ Greenfield rework of an already-shipped feature — no user data to migrate. `sr
 
 #### Automated
 
-- [x] 3.1 Unit tests pass: `npm test`
-- [x] 3.2 Type checking passes: `npx tsc --noEmit`
-- [x] 3.3 Linting passes: `npm run lint`
+- [x] 3.1 Unit tests pass: `npm test` — e33ca19
+- [x] 3.2 Type checking passes: `npx tsc --noEmit` — e33ca19
+- [x] 3.3 Linting passes: `npm run lint` — e33ca19
 
 ### Phase 4: Push-to-talk recording + screen rewrite
 
 #### Automated
 
-- [ ] 4.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 4.2 Linting passes: `npm run lint`
+- [x] 4.1 Type checking passes: `npx tsc --noEmit`
+- [x] 4.2 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 4.3 End-to-end happy path on-device: hold button, dictate an event, release → parsed title/date/time shown → tap Confirm → event appears in Google Calendar within a few seconds → screen returns to idle
-- [ ] 4.4 Tapping Cancel on the confirm screen discards the draft; no event is created
-- [ ] 4.5 Dictating a time that conflicts with an existing event still surfaces the conflict description before anything is created
-- [ ] 4.6 A simulated STT or parse failure shows an inline error and returns to idle, and retrying succeeds
-- [ ] 4.7 Revoking Calendar access (simulated 401) during event creation still triggers the existing sign-out teardown
-- [ ] 4.8 The on-screen status stays glanceable (no dense text) throughout the pipeline
+- [x] 4.3 End-to-end happy path on-device: hold button, dictate an event, release → parsed title/date/time shown → tap Confirm → event appears in Google Calendar within a few seconds → screen returns to idle
+- [x] 4.4 Tapping Cancel on the confirm screen discards the draft; no event is created
+- [x] 4.5 Dictating a time that conflicts with an existing event still surfaces the conflict description before anything is created
+- [x] 4.6 A simulated STT or parse failure shows an inline error and returns to idle, and retrying succeeds
+- [x] 4.7 Revoking Calendar access (simulated 401) during event creation still triggers the existing sign-out teardown
+- [x] 4.8 The on-screen status stays glanceable (no dense text) throughout the pipeline

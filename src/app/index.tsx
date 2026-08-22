@@ -1,3 +1,4 @@
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -5,13 +6,70 @@ import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useGoogleCalendarSession } from '@/hooks/use-google-calendar-session';
+import { useVoiceRecorder } from '@/lib/audio-recorder';
+import { handleCreateEventTool } from '@/lib/create-event-tool';
+import { parseEventFromTranscript } from '@/lib/event-parser';
+import type { DraftEvent } from '@/lib/google-calendar-api';
+import { transcribeAudio } from '@/lib/voice-stt';
 
 export default function HomeScreen() {
   return <VoiceScreen />;
 }
 
+type ScreenPhase = 'idle' | 'recording' | 'transcribing' | 'parsing' | 'confirming' | 'creating';
+
 function VoiceScreen() {
   const session = useGoogleCalendarSession();
+  const recorder = useVoiceRecorder();
+  const [phase, setPhase] = useState<ScreenPhase>('idle');
+  const [draft, setDraft] = useState<DraftEvent | null>(null);
+  const [pipelineError, setPipelineError] = useState<string | null>(null);
+  const [resultMessage, setResultMessage] = useState<string | null>(null);
+
+  const handlePressIn = useCallback(() => {
+    if (session.state !== 'signedIn' || phase !== 'idle') return;
+    setPipelineError(null);
+    setResultMessage(null);
+    setPhase('recording');
+    recorder.start().catch((err: unknown) => {
+      setPipelineError(err instanceof Error ? err.message : 'Could not start recording');
+      setPhase('idle');
+    });
+  }, [session.state, phase, recorder]);
+
+  const handlePressOut = useCallback(() => {
+    if (phase !== 'recording') return;
+    void (async () => {
+      try {
+        const uri = await recorder.stop();
+        setPhase('transcribing');
+        const transcript = await transcribeAudio(uri);
+        setPhase('parsing');
+        const parsed = await parseEventFromTranscript(transcript);
+        setDraft(parsed);
+        setPhase('confirming');
+      } catch (err) {
+        setPipelineError(err instanceof Error ? err.message : 'Something went wrong');
+        setPhase('idle');
+      }
+    })();
+  }, [phase, recorder]);
+
+  const handleConfirm = useCallback(() => {
+    if (!draft) return;
+    setPhase('creating');
+    void (async () => {
+      const message = await handleCreateEventTool(draft, () => void session.forceSignOut());
+      setResultMessage(message);
+      setDraft(null);
+      setPhase('idle');
+    })();
+  }, [draft, session]);
+
+  const handleCancel = useCallback(() => {
+    setDraft(null);
+    setPhase('idle');
+  }, []);
 
   return (
     <ThemedView style={styles.container}>
@@ -38,9 +96,31 @@ function VoiceScreen() {
           </>
         )}
 
-        {session.state === 'signedIn' && (
+        {session.state === 'signedIn' && phase !== 'confirming' && (
           <>
-            <ThemedText type="default">Voice recording coming soon</ThemedText>
+            <Pressable
+              disabled={phase !== 'idle' && phase !== 'recording'}
+              onPressIn={handlePressIn}
+              onPressOut={handlePressOut}
+              style={({ pressed }) => pressed && styles.pressed}>
+              <ThemedView type="backgroundSelected" style={styles.button}>
+                {phase === 'idle' || phase === 'recording' ? (
+                  <ThemedText type="default">{statusLabel(phase)}</ThemedText>
+                ) : (
+                  <ActivityIndicator />
+                )}
+              </ThemedView>
+            </Pressable>
+            {pipelineError !== null && (
+              <ThemedText type="small" themeColor="textSecondary">
+                {pipelineError}
+              </ThemedText>
+            )}
+            {resultMessage !== null && (
+              <ThemedText type="small" themeColor="textSecondary">
+                {resultMessage}
+              </ThemedText>
+            )}
             {session.error !== null && (
               <ThemedText type="small" themeColor="textSecondary">
                 {session.error}
@@ -48,9 +128,47 @@ function VoiceScreen() {
             )}
           </>
         )}
+
+        {session.state === 'signedIn' && phase === 'confirming' && draft && (
+          <>
+            <ThemedText type="default">{draft.title}</ThemedText>
+            <ThemedText type="small" themeColor="textSecondary">
+              {formatDraftTime(draft)}
+            </ThemedText>
+            <ThemedView style={styles.confirmRow}>
+              <Pressable style={({ pressed }) => pressed && styles.pressed} onPress={handleConfirm}>
+                <ThemedView type="backgroundSelected" style={styles.button}>
+                  <ThemedText type="default">Confirm</ThemedText>
+                </ThemedView>
+              </Pressable>
+              <Pressable style={({ pressed }) => pressed && styles.pressed} onPress={handleCancel}>
+                <ThemedView type="backgroundElement" style={styles.button}>
+                  <ThemedText type="default">Cancel</ThemedText>
+                </ThemedView>
+              </Pressable>
+            </ThemedView>
+          </>
+        )}
       </SafeAreaView>
     </ThemedView>
   );
+}
+
+function statusLabel(phase: 'idle' | 'recording'): string {
+  return phase === 'recording' ? 'Listening… release to finish' : 'Hold to create an event';
+}
+
+function formatDraftTime(draft: DraftEvent): string {
+  const start = new Date(draft.startDateTime);
+  const formatted = start.toLocaleString(undefined, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+  const durationMinutes = draft.durationMinutes ?? 60;
+  return `${formatted} · ${durationMinutes} min`;
 }
 
 const styles = StyleSheet.create({
@@ -78,5 +196,9 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.7,
+  },
+  confirmRow: {
+    flexDirection: 'row',
+    gap: Spacing.three,
   },
 });
