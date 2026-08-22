@@ -1,4 +1,4 @@
-import { CalendarApiError, createEvent, findConflictingEvents } from './google-calendar-api';
+import { CalendarApiError, createEvent, findConflictingEvents, listTodayEvents } from './google-calendar-api';
 
 describe('createEvent', () => {
   beforeEach(() => {
@@ -105,5 +105,63 @@ describe('findConflictingEvents', () => {
     await expect(
       findConflictingEvents('token', '2026-08-23T15:00:00Z', '2026-08-23T16:00:00Z'),
     ).rejects.toThrow(CalendarApiError);
+  });
+});
+
+describe('listTodayEvents', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn();
+    jest.useFakeTimers().setSystemTime(new Date(2026, 7, 23, 12, 0, 0, 0));
+  });
+
+  afterEach(() => {
+    jest.useRealTimers();
+  });
+
+  it('requests events bounded to local midnight-to-midnight for today', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: async () => ({}) });
+
+    await listTodayEvents('token');
+
+    const url = (global.fetch as jest.Mock).mock.calls[0][0] as string;
+    const params = new URLSearchParams(url.split('?')[1]);
+
+    expect(params.get('timeMin')).toBe(new Date(2026, 7, 23, 0, 0, 0, 0).toISOString());
+    expect(params.get('timeMax')).toBe(new Date(2026, 7, 23, 23, 59, 59, 999).toISOString());
+    expect(params.get('singleEvents')).toBe('true');
+    expect(params.get('orderBy')).toBe('startTime');
+  });
+
+  it('flags date-only items as allDay and dateTime items as not allDay', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [
+          { id: 'e1', summary: 'Standup', start: { dateTime: '2026-08-23T09:00:00Z' } },
+          { id: 'e2', summary: 'Conference', start: { date: '2026-08-23' } },
+        ],
+      }),
+    });
+
+    const result = await listTodayEvents('token');
+
+    expect(result).toEqual([
+      { id: 'e1', summary: 'Standup', start: '2026-08-23T09:00:00Z', allDay: false },
+      { id: 'e2', summary: 'Conference', start: '2026-08-23', allDay: true },
+    ]);
+  });
+
+  it('returns an empty array when there are no events today', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: async () => ({}) });
+
+    const result = await listTodayEvents('token');
+
+    expect(result).toEqual([]);
+  });
+
+  it('throws CalendarApiError on a non-2xx response', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({ ok: false, status: 401 });
+
+    await expect(listTodayEvents('token')).rejects.toThrow(CalendarApiError);
   });
 });

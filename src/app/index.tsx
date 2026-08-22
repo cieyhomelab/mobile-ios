@@ -1,4 +1,5 @@
-import { useCallback, useState } from 'react';
+import { useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
+import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
@@ -9,22 +10,39 @@ import { useGoogleCalendarSession } from '@/hooks/use-google-calendar-session';
 import { useVoiceRecorder } from '@/lib/audio-recorder';
 import { handleCreateEventTool } from '@/lib/create-event-tool';
 import { parseEventFromTranscript } from '@/lib/event-parser';
-import type { DraftEvent } from '@/lib/google-calendar-api';
+import { CalendarApiError, listTodayEvents, type DraftEvent } from '@/lib/google-calendar-api';
+import { formatTodayReadout } from '@/lib/today-readout';
 import { transcribeAudio } from '@/lib/voice-stt';
+import { synthesizeSpeech } from '@/lib/voice-tts';
 
 export default function HomeScreen() {
   return <VoiceScreen />;
 }
 
-type ScreenPhase = 'idle' | 'recording' | 'transcribing' | 'parsing' | 'confirming' | 'creating';
+type ScreenPhase =
+  | 'idle'
+  | 'recording'
+  | 'transcribing'
+  | 'parsing'
+  | 'confirming'
+  | 'creating'
+  | 'fetchingToday'
+  | 'speakingToday';
 
 function VoiceScreen() {
   const session = useGoogleCalendarSession();
   const recorder = useVoiceRecorder();
+  const player = useAudioPlayer(null);
+  const playerStatus = useAudioPlayerStatus(player);
   const [phase, setPhase] = useState<ScreenPhase>('idle');
   const [draft, setDraft] = useState<DraftEvent | null>(null);
   const [pipelineError, setPipelineError] = useState<string | null>(null);
   const [resultMessage, setResultMessage] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (phase !== 'speakingToday' || !playerStatus.didJustFinish) return;
+    void Promise.resolve().then(() => setPhase('idle'));
+  }, [phase, playerStatus.didJustFinish]);
 
   const handlePressIn = useCallback(() => {
     if (session.state !== 'signedIn' || phase !== 'idle') return;
@@ -71,6 +89,37 @@ function VoiceScreen() {
     setPhase('idle');
   }, []);
 
+  const handleReadToday = useCallback(() => {
+    const accessToken = session.accessToken;
+    if (session.state !== 'signedIn' || phase !== 'idle' || !accessToken) return;
+    setPipelineError(null);
+    setResultMessage(null);
+    setPhase('fetchingToday');
+    void (async () => {
+      try {
+        const events = await listTodayEvents(accessToken);
+        const summary = formatTodayReadout(events);
+        const uri = await synthesizeSpeech(summary);
+        player.replace(uri);
+        player.play();
+        setPhase('speakingToday');
+      } catch (err) {
+        if (err instanceof CalendarApiError && err.status === 401) {
+          await session.forceSignOut();
+          setPhase('idle');
+          return;
+        }
+        setPipelineError(err instanceof Error ? err.message : "Couldn't read today's events");
+        setPhase('idle');
+      }
+    })();
+  }, [session, phase, player]);
+
+  const handleStopSpeaking = useCallback(() => {
+    player.pause();
+    setPhase('idle');
+  }, [player]);
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
@@ -110,6 +159,25 @@ function VoiceScreen() {
                 <ThemedText type="default">{statusLabel(phase)}</ThemedText>
               </ThemedView>
             </Pressable>
+            {phase === 'speakingToday' ? (
+              <Pressable style={({ pressed }) => pressed && styles.pressed} onPress={handleStopSpeaking}>
+                <ThemedView type="backgroundElement" style={styles.button}>
+                  <ThemedText type="default">Stop</ThemedText>
+                </ThemedView>
+              </Pressable>
+            ) : (
+              <Pressable
+                disabled={phase !== 'idle'}
+                onPress={handleReadToday}
+                style={({ pressed }) => pressed && styles.pressed}>
+                <ThemedView type="backgroundSelected" style={styles.button}>
+                  {phase === 'fetchingToday' && <ActivityIndicator />}
+                  <ThemedText type="default">
+                    {phase === 'fetchingToday' ? 'Checking your calendar…' : "What's on today?"}
+                  </ThemedText>
+                </ThemedView>
+              </Pressable>
+            )}
             {pipelineError !== null && (
               <ThemedText type="small" themeColor="textSecondary">
                 {pipelineError}
