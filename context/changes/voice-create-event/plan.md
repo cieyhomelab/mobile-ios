@@ -302,23 +302,23 @@ None — greenfield feature, no existing data or users to migrate.
 
 #### Automated
 
-- [x] 1.1 Dependencies install cleanly: `npm install`
-- [x] 1.2 Type checking passes: `npx tsc --noEmit`
-- [x] 1.3 Linting passes: `npm run lint`
-- [x] 1.4 Test runner is wired and runs (even with zero tests yet): `npm test -- --watchAll=false`
+- [x] 1.1 Dependencies install cleanly: `npm install` — e3ab743
+- [x] 1.2 Type checking passes: `npx tsc --noEmit` — e3ab743
+- [x] 1.3 Linting passes: `npm run lint` — e3ab743
+- [x] 1.4 Test runner is wired and runs (even with zero tests yet): `npm test -- --watchAll=false` — e3ab743
 
 #### Manual
 
-- [x] 1.5 `npx expo prebuild --clean && npm run ios` builds and launches a dev client successfully with the new native modules linked
+- [x] 1.5 `npx expo prebuild --clean && npm run ios` builds and launches a dev client successfully with the new native modules linked — e3ab743
 - [ ] 1.6 Launching the app on-device prompts for microphone permission with the configured description text (deferred — no code requests mic access until Phase 3's wake-word listener)
 
 ### Phase 2: Google Calendar create-event API + conflict check
 
 #### Automated
 
-- [ ] 2.1 Unit tests pass: `npm test -- --watchAll=false`
-- [ ] 2.2 Type checking passes: `npx tsc --noEmit`
-- [ ] 2.3 Linting passes: `npm run lint`
+- [x] 2.1 Unit tests pass: `npm test -- --watchAll=false`
+- [x] 2.2 Type checking passes: `npx tsc --noEmit`
+- [x] 2.3 Linting passes: `npm run lint`
 
 ### Phase 3: Wake-word listener (Porcupine)
 
