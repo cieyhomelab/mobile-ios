@@ -104,11 +104,10 @@ function VoiceScreen() {
               onPressOut={handlePressOut}
               style={({ pressed }) => pressed && styles.pressed}>
               <ThemedView type="backgroundSelected" style={styles.button}>
-                {phase === 'idle' || phase === 'recording' ? (
-                  <ThemedText type="default">{statusLabel(phase)}</ThemedText>
-                ) : (
+                {(phase === 'transcribing' || phase === 'parsing' || phase === 'creating') && (
                   <ActivityIndicator />
                 )}
+                <ThemedText type="default">{statusLabel(phase)}</ThemedText>
               </ThemedView>
             </Pressable>
             {pipelineError !== null && (
@@ -154,8 +153,20 @@ function VoiceScreen() {
   );
 }
 
-function statusLabel(phase: 'idle' | 'recording'): string {
-  return phase === 'recording' ? 'Listening… release to finish' : 'Hold to create an event';
+function statusLabel(phase: ScreenPhase): string {
+  switch (phase) {
+    case 'recording':
+      return 'Listening… release to finish';
+    case 'transcribing':
+      return 'Transcribing…';
+    case 'parsing':
+      return 'Understanding…';
+    case 'creating':
+      return 'Creating event…';
+    case 'idle':
+    default:
+      return 'Hold to create an event';
+  }
 }
 
 function formatDraftTime(draft: DraftEvent): string {
@@ -193,6 +204,8 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.three,
     borderRadius: Spacing.three,
+    alignItems: 'center',
+    gap: Spacing.two,
   },
   pressed: {
     opacity: 0.7,

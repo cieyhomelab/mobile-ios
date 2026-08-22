@@ -1,4 +1,4 @@
-import { useCallback, useState } from 'react';
+import { useCallback, useRef, useState } from 'react';
 import {
   getRecordingPermissionsAsync,
   requestRecordingPermissionsAsync,
@@ -16,23 +16,31 @@ export type VoiceRecorder = {
 export function useVoiceRecorder(): VoiceRecorder {
   const recorder = useAudioRecorder(RecordingPresets.HIGH_QUALITY);
   const [isRecording, setIsRecording] = useState(false);
+  const startPromiseRef = useRef<Promise<void> | null>(null);
 
   const start = useCallback(async () => {
-    const permissions = await getRecordingPermissionsAsync();
-    if (!permissions.granted) {
-      const requested = await requestRecordingPermissionsAsync();
-      if (!requested.granted) {
-        throw new Error('Microphone permission was denied');
+    const promise = (async () => {
+      const permissions = await getRecordingPermissionsAsync();
+      if (!permissions.granted) {
+        const requested = await requestRecordingPermissionsAsync();
+        if (!requested.granted) {
+          throw new Error('Microphone permission was denied');
+        }
       }
-    }
 
-    await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
-    await recorder.prepareToRecordAsync();
-    recorder.record();
-    setIsRecording(true);
+      await setAudioModeAsync({ allowsRecording: true, playsInSilentMode: true });
+      await recorder.prepareToRecordAsync();
+      recorder.record();
+      setIsRecording(true);
+    })();
+    startPromiseRef.current = promise;
+    await promise;
   }, [recorder]);
 
   const stop = useCallback(async () => {
+    if (startPromiseRef.current) {
+      await startPromiseRef.current.catch(() => undefined);
+    }
     await recorder.stop();
     setIsRecording(false);
     if (!recorder.uri) {
