@@ -310,7 +310,7 @@ None — greenfield feature, no existing data or users to migrate.
 #### Manual
 
 - [x] 1.5 `npx expo prebuild --clean && npm run ios` builds and launches a dev client successfully with the new native modules linked — e3ab743
-- [ ] 1.6 Launching the app on-device prompts for microphone permission with the configured description text (deferred — no code requests mic access until Phase 3's wake-word listener)
+- [x] 1.6 Launching the app on-device prompts for microphone permission with the configured description text (confirmed during Phase 3/4 on-device testing)
 
 ### Phase 2: Google Calendar create-event API + conflict check
 
@@ -337,21 +337,21 @@ None — greenfield feature, no existing data or users to migrate.
 
 #### Automated
 
-- [x] 4.1 Type checking passes: `npx tsc --noEmit`
-- [x] 4.2 Linting passes: `npm run lint`
+- [x] 4.1 Type checking passes: `npx tsc --noEmit` — fdbd29b
+- [x] 4.2 Linting passes: `npm run lint` — fdbd29b
 
 #### Manual
 
-- [x] 4.3 End-to-end happy path on-device: wake word → dictate an event → agent reads it back → say "yes" → event appears in Google Calendar within a few seconds → app returns to wake-word listening
-- [x] 4.4 Saying "no" to the read-back does not create an event
-- [x] 4.5 Dictating a time that conflicts with an existing event causes the agent to voice the conflict before creating anything
-- [x] 4.6 Revoking Calendar access (simulated 401) mid-session ends the session, stops wake-word listening, and returns to the sign-in screen
-- [x] 4.7 The on-screen status stays glanceable (no dense text) throughout a session
+- [x] 4.3 End-to-end happy path on-device: wake word → dictate an event → agent reads it back → say "yes" → event appears in Google Calendar within a few seconds → app returns to wake-word listening — fdbd29b
+- [x] 4.4 Saying "no" to the read-back does not create an event — fdbd29b
+- [x] 4.5 Dictating a time that conflicts with an existing event causes the agent to voice the conflict before creating anything — fdbd29b
+- [x] 4.6 Revoking Calendar access (simulated 401) mid-session ends the session, stops wake-word listening, and returns to the sign-in screen — fdbd29b
+- [x] 4.7 The on-screen status stays glanceable (no dense text) throughout a session — fdbd29b
 
 ### Phase 5: ElevenLabs agent dashboard configuration (non-code)
 
 #### Manual
 
-- [x] 5.1 A test conversation confirms the agent always reads back and waits for a spoken confirmation before it calls `create_event`
-- [x] 5.2 A test conversation where the user says "no" confirms the tool is never called
-- [x] 5.3 The configured tool's parameter names/types match the Phase 2 handler exactly (a mismatch would fail silently per ElevenLabs' case-sensitive matching)
+- [x] 5.1 A test conversation confirms the agent always reads back and waits for a spoken confirmation before it calls `create_event` — fdbd29b
+- [x] 5.2 A test conversation where the user says "no" confirms the tool is never called — fdbd29b
+- [x] 5.3 The configured tool's parameter names/types match the Phase 2 handler exactly (a mismatch would fail silently per ElevenLabs' case-sensitive matching) — fdbd29b

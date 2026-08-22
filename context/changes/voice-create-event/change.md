@@ -1,7 +1,7 @@
 ---
 change_id: voice-create-event
 title: Voice create event
-status: implementing
+status: implemented
 created: 2026-08-22
 updated: 2026-08-22
 archived_at: null
