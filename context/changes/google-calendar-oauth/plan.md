@@ -210,15 +210,15 @@ Not applicable — no existing data or prior auth system to migrate from.
 
 #### Automated
 
-- [ ] 1.1 Dependency installs cleanly: `npm install`
-- [ ] 1.2 Type checking passes: `npx tsc --noEmit`
-- [ ] 1.3 `expo prebuild --clean` completes without error
+- [x] 1.1 Dependency installs cleanly: `npm install`
+- [x] 1.2 Type checking passes: `npx tsc --noEmit`
+- [x] 1.3 `expo prebuild --clean` completes without error
 
 #### Manual
 
-- [ ] 1.4 Google Cloud Console shows an iOS OAuth client and a Web OAuth client, consent screen in Testing status with `maciej.kulesza@gmail.com` as a test user
-- [ ] 1.5 `npx expo run:ios` builds and launches the app on a simulator or device, still showing the existing (unmodified) Home tab content
-- [ ] 1.6 No crash or red-screen error on launch
+- [x] 1.4 Google Cloud Console shows an iOS OAuth client and a Web OAuth client, consent screen in Testing status with `maciej.kulesza@gmail.com` as a test user
+- [x] 1.5 `npx expo run:ios` builds and launches the app on a simulator or device, still showing the existing (unmodified) Home tab content
+- [x] 1.6 No crash or red-screen error on launch
 
 ### Phase 2: Auth flow, connect screen, and Calendar API verification
 
