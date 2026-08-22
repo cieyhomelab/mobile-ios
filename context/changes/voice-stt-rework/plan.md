@@ -288,17 +288,17 @@ Greenfield rework of an already-shipped feature — no user data to migrate. `sr
 
 #### Automated
 
-- [x] 2.1 Unit tests pass: `npm test`
-- [x] 2.2 Type checking passes: `npx tsc --noEmit`
-- [x] 2.3 Linting passes: `npm run lint`
+- [x] 2.1 Unit tests pass: `npm test` — 5e5981f
+- [x] 2.2 Type checking passes: `npx tsc --noEmit` — 5e5981f
+- [x] 2.3 Linting passes: `npm run lint` — 5e5981f
 
 ### Phase 3: Transcript → structured event parser
 
 #### Automated
 
-- [ ] 3.1 Unit tests pass: `npm test`
-- [ ] 3.2 Type checking passes: `npx tsc --noEmit`
-- [ ] 3.3 Linting passes: `npm run lint`
+- [x] 3.1 Unit tests pass: `npm test`
+- [x] 3.2 Type checking passes: `npx tsc --noEmit`
+- [x] 3.3 Linting passes: `npm run lint`
 
 ### Phase 4: Push-to-talk recording + screen rewrite
 
