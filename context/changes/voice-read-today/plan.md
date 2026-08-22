@@ -304,9 +304,9 @@ None — additive feature, no existing data or schema changes.
 
 #### Automated
 
-- [x] 5.1 Type checking passes: `npx tsc --noEmit`
-- [x] 5.2 Linting passes: `npm run lint`
-- [x] 5.3 Existing tests still pass: `npm test`
+- [x] 5.1 Type checking passes: `npx tsc --noEmit` — 9dded0f
+- [x] 5.2 Linting passes: `npm run lint` — 9dded0f
+- [x] 5.3 Existing tests still pass: `npm test` — 9dded0f
 
 #### Manual
 
