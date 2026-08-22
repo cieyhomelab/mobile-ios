@@ -9,7 +9,10 @@
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon",
-      "bundleIdentifier": "com.mkulesza.voiceassistant"
+      "bundleIdentifier": "com.mkulesza.voiceassistant",
+      "infoPlist": {
+        "NSMicrophoneUsageDescription": "This app listens for a wake word and your voice to create calendar events hands-free."
+      }
     },
     "android": {
       "adaptiveIcon": {
@@ -39,6 +42,16 @@
         "@react-native-google-signin/google-signin",
         {
           "iosUrlScheme": "com.googleusercontent.apps.110934841502-93gettlb1arl7vmh2q1bm93s7mj78qar"
+        }
+      ],
+      "@livekit/react-native-expo-plugin",
+      "@config-plugins/react-native-webrtc",
+      [
+        "expo-build-properties",
+        {
+          "ios": {
+            "buildReactNativeFromSource": true
+          }
         }
       ]
     ],
