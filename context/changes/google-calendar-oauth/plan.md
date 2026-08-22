@@ -210,27 +210,27 @@ Not applicable — no existing data or prior auth system to migrate from.
 
 #### Automated
 
-- [x] 1.1 Dependency installs cleanly: `npm install`
-- [x] 1.2 Type checking passes: `npx tsc --noEmit`
-- [x] 1.3 `expo prebuild --clean` completes without error
+- [x] 1.1 Dependency installs cleanly: `npm install` — 8629962
+- [x] 1.2 Type checking passes: `npx tsc --noEmit` — 8629962
+- [x] 1.3 `expo prebuild --clean` completes without error — 8629962
 
 #### Manual
 
-- [x] 1.4 Google Cloud Console shows an iOS OAuth client and a Web OAuth client, consent screen in Testing status with `maciej.kulesza@gmail.com` as a test user
-- [x] 1.5 `npx expo run:ios` builds and launches the app on a simulator or device, still showing the existing (unmodified) Home tab content
-- [x] 1.6 No crash or red-screen error on launch
+- [x] 1.4 Google Cloud Console shows an iOS OAuth client and a Web OAuth client, consent screen in Testing status with `maciej.kulesza@gmail.com` as a test user — 8629962
+- [x] 1.5 `npx expo run:ios` builds and launches the app on a simulator or device, still showing the existing (unmodified) Home tab content — 8629962
+- [x] 1.6 No crash or red-screen error on launch — 8629962
 
 ### Phase 2: Auth flow, connect screen, and Calendar API verification
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit`
+- [x] 2.2 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 2.3 Cold-launching the dev client with no prior session shows the connect button
-- [ ] 2.4 Tapping it opens Google's native sign-in UI and, after granting access, the screen shows real upcoming events
-- [ ] 2.5 Force-quitting and relaunching skips the button and goes straight to the event list
-- [ ] 2.6 Cancelling/denying sign-in shows the inline error and leaves the button tappable again
-- [ ] 2.7 Revoking access and retrying clears the session and returns to the connect screen
+- [x] 2.3 Cold-launching the dev client with no prior session shows the connect button
+- [x] 2.4 Tapping it opens Google's native sign-in UI and, after granting access, the screen shows real upcoming events
+- [x] 2.5 Force-quitting and relaunching skips the button and goes straight to the event list
+- [x] 2.6 Cancelling/denying sign-in shows the inline error and leaves the button tappable again
+- [x] 2.7 Revoking access and retrying clears the session and returns to the connect screen
