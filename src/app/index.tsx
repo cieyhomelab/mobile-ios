@@ -1,122 +1,135 @@
-import { useCallback, useEffect, useState } from 'react';
+import { useCallback, useEffect, useRef } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import {
+  ConversationProvider,
+  ConversationStatus,
+  useConversationControls,
+  useConversationStatus,
+} from '@elevenlabs/react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
-import { CalendarApiError, CalendarEvent, listUpcomingEvents } from '@/lib/google-calendar-api';
-import {
-  configureGoogleAuth,
-  getAccessToken,
-  signInInteractively,
-  signInSilently,
-  signOutLocally,
-} from '@/lib/google-calendar-auth';
-
-type ScreenState = 'loading' | 'signedOut' | 'signedIn';
+import { useGoogleCalendarSession } from '@/hooks/use-google-calendar-session';
+import { handleCreateEventTool } from '@/lib/create-event-tool';
+import { ELEVENLABS_AGENT_ID } from '@/lib/voice-config';
+import { useWakeWordListener, WakeWordListener } from '@/lib/wake-word';
 
 export default function HomeScreen() {
-  const [state, setState] = useState<ScreenState>('loading');
-  const [events, setEvents] = useState<CalendarEvent[]>([]);
-  const [error, setError] = useState<string | null>(null);
-  const [isConnecting, setIsConnecting] = useState(false);
+  return (
+    <ConversationProvider agentId={ELEVENLABS_AGENT_ID}>
+      <VoiceScreen />
+    </ConversationProvider>
+  );
+}
 
-  const loadEvents = useCallback(async (accessToken: string) => {
-    try {
-      const upcoming = await listUpcomingEvents(accessToken);
-      setEvents(upcoming);
-      setError(null);
-      setState('signedIn');
-    } catch (err) {
-      if (err instanceof CalendarApiError && err.status === 401) {
-        await signOutLocally();
-        setEvents([]);
-        setState('signedOut');
-        return;
-      }
-      setError("Couldn't refresh events");
-      setState((prev) => (prev === 'signedIn' ? 'signedIn' : 'signedOut'));
-    }
-  }, []);
+function VoiceScreen() {
+  const session = useGoogleCalendarSession();
+  const { startSession, endSession } = useConversationControls();
+  const { status, message } = useConversationStatus();
+
+  const wakeWordRef = useRef<WakeWordListener | null>(null);
+  const suppressAutoResumeRef = useRef(false);
+
+  const handleCreateEvent = useCallback(
+    (params: { title: string; startDateTime: string; durationMinutes?: number }) =>
+      handleCreateEventTool(params, () => {
+        suppressAutoResumeRef.current = true;
+        endSession();
+        void session.forceSignOut();
+      }),
+    [endSession, session],
+  );
+
+  const handleWake = useCallback(() => {
+    void (async () => {
+      await wakeWordRef.current?.stop();
+      suppressAutoResumeRef.current = false;
+      startSession({
+        agentId: ELEVENLABS_AGENT_ID,
+        clientTools: { create_event: handleCreateEvent },
+        dynamicVariables: {
+          currentDateTime: new Date().toISOString(),
+          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
+        },
+        onDisconnect: () => {
+          if (!suppressAutoResumeRef.current) void wakeWordRef.current?.start();
+        },
+        onError: () => {
+          if (!suppressAutoResumeRef.current) void wakeWordRef.current?.start();
+        },
+      });
+    })();
+  }, [startSession, handleCreateEvent]);
+
+  const wakeWord = useWakeWordListener(handleWake);
 
   useEffect(() => {
-    (async () => {
-      configureGoogleAuth();
-      const silentlySignedIn = await signInSilently();
-      if (!silentlySignedIn) {
-        setState('signedOut');
-        return;
-      }
-      const accessToken = await getAccessToken();
-      if (!accessToken) {
-        setState('signedOut');
-        return;
-      }
-      await loadEvents(accessToken);
-    })();
-  }, [loadEvents]);
+    wakeWordRef.current = wakeWord;
+  }, [wakeWord]);
 
-  const handleConnect = useCallback(async () => {
-    if (isConnecting) return;
-    setIsConnecting(true);
-    setError(null);
-    try {
-      const result = await signInInteractively();
-      if ('error' in result) {
-        setError(result.error);
-        return;
-      }
-      await loadEvents(result.accessToken);
-    } finally {
-      setIsConnecting(false);
-    }
-  }, [isConnecting, loadEvents]);
+  useEffect(() => {
+    if (session.state !== 'signedIn') return;
+    void wakeWordRef.current?.start();
+    return () => {
+      void wakeWordRef.current?.stop();
+    };
+  }, [session.state]);
 
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ThemedText type="title" style={styles.title}>
-          Google Calendar
+          Voice Create Event
         </ThemedText>
 
-        {state === 'loading' && <ActivityIndicator />}
+        {session.state === 'loading' && <ActivityIndicator />}
 
-        {state === 'signedOut' && (
+        {session.state === 'signedOut' && (
           <>
             <Pressable
-              disabled={isConnecting}
+              disabled={session.isConnecting}
               style={({ pressed }) => pressed && styles.pressed}
-              onPress={() => void handleConnect()}>
+              onPress={() => void session.handleConnect()}>
               <ThemedView type="backgroundSelected" style={styles.button}>
                 <ThemedText type="default">
-                  {isConnecting ? 'Connecting…' : 'Connect Google Calendar'}
+                  {session.isConnecting ? 'Connecting…' : 'Connect Google Calendar'}
                 </ThemedText>
               </ThemedView>
             </Pressable>
-            {error !== null && <ThemedText type="small">{error}</ThemedText>}
+            {session.error !== null && <ThemedText type="small">{session.error}</ThemedText>}
           </>
         )}
 
-        {state === 'signedIn' && (
+        {session.state === 'signedIn' && (
           <>
-            {error !== null && <ThemedText type="small">{error}</ThemedText>}
-            <ThemedView type="backgroundElement" style={styles.eventList}>
-              {events.length === 0 && <ThemedText type="small">No upcoming events</ThemedText>}
-              {events.map((event) => (
-                <ThemedView key={event.id} style={styles.eventRow}>
-                  <ThemedText type="default">{event.summary}</ThemedText>
-                  <ThemedText type="small" themeColor="textSecondary">
-                    {event.start}
-                  </ThemedText>
-                </ThemedView>
-              ))}
-            </ThemedView>
+            {status === 'connecting' && <ActivityIndicator />}
+            <ThemedText type="default">{statusLabel(status, message)}</ThemedText>
+            {session.error !== null && (
+              <ThemedText type="small" themeColor="textSecondary">
+                {session.error}
+              </ThemedText>
+            )}
           </>
         )}
       </SafeAreaView>
     </ThemedView>
   );
+}
+
+function statusLabel(status: ConversationStatus, message?: string): string {
+  switch (status) {
+    case 'connecting':
+      return 'Connecting…';
+    case 'connected':
+      return 'Listening — say the event details';
+    case 'error':
+      return message ?? 'Something went wrong';
+    case 'disconnected':
+    default:
+      return 'Say the wake word to create an event';
+  }
 }
 
 const styles = StyleSheet.create({
@@ -144,15 +157,5 @@ const styles = StyleSheet.create({
   },
   pressed: {
     opacity: 0.7,
-  },
-  eventList: {
-    gap: Spacing.three,
-    alignSelf: 'stretch',
-    paddingHorizontal: Spacing.three,
-    paddingVertical: Spacing.four,
-    borderRadius: Spacing.four,
-  },
-  eventRow: {
-    gap: Spacing.half,
   },
 });

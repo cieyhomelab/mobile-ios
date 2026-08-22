@@ -1,11 +1,14 @@
 import { getAccessToken, signOutLocally } from './google-calendar-auth';
 import { CalendarApiError, createEvent, findConflictingEvents } from './google-calendar-api';
 
-export async function handleCreateEventTool(params: {
-  title: string;
-  startDateTime: string;
-  durationMinutes?: number;
-}): Promise<string> {
+export async function handleCreateEventTool(
+  params: {
+    title: string;
+    startDateTime: string;
+    durationMinutes?: number;
+  },
+  onUnauthorized?: () => void,
+): Promise<string> {
   const accessToken = await getAccessToken();
   if (!accessToken) {
     return 'Unable to access your calendar right now. Please try again.';
@@ -31,6 +34,7 @@ export async function handleCreateEventTool(params: {
   } catch (error) {
     if (error instanceof CalendarApiError && error.status === 401) {
       await signOutLocally();
+      onUnauthorized?.();
       return 'Your calendar access has expired. Please sign in again.';
     }
     return 'Something went wrong creating that event. Please try again.';

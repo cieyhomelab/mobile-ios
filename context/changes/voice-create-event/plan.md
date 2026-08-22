@@ -324,34 +324,34 @@ None — greenfield feature, no existing data or users to migrate.
 
 #### Automated
 
-- [x] 3.1 Type checking passes: `npx tsc --noEmit`
-- [x] 3.2 Linting passes: `npm run lint`
+- [x] 3.1 Type checking passes: `npx tsc --noEmit` — d2825ff
+- [x] 3.2 Linting passes: `npm run lint` — d2825ff
 
 #### Manual
 
-- [x] 3.3 Opening the app's Home screen (signed in) begins wake-word listening automatically, with no additional tap
-- [x] 3.4 Saying the configured wake word fires the `onWake` callback reliably in a quiet room
-- [x] 3.5 Backgrounding the app stops draining the mic/battery unexpectedly (foreground-only scope holds)
+- [x] 3.3 Opening the app's Home screen (signed in) begins wake-word listening automatically, with no additional tap — d2825ff
+- [x] 3.4 Saying the configured wake word fires the `onWake` callback reliably in a quiet room — d2825ff
+- [x] 3.5 Backgrounding the app stops draining the mic/battery unexpectedly (foreground-only scope holds) — d2825ff
 
 ### Phase 4: ElevenLabs session + tool wiring + screen replacement
 
 #### Automated
 
-- [ ] 4.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 4.2 Linting passes: `npm run lint`
+- [x] 4.1 Type checking passes: `npx tsc --noEmit`
+- [x] 4.2 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 4.3 End-to-end happy path on-device: wake word → dictate an event → agent reads it back → say "yes" → event appears in Google Calendar within a few seconds → app returns to wake-word listening
-- [ ] 4.4 Saying "no" to the read-back does not create an event
-- [ ] 4.5 Dictating a time that conflicts with an existing event causes the agent to voice the conflict before creating anything
-- [ ] 4.6 Revoking Calendar access (simulated 401) mid-session ends the session, stops wake-word listening, and returns to the sign-in screen
-- [ ] 4.7 The on-screen status stays glanceable (no dense text) throughout a session
+- [x] 4.3 End-to-end happy path on-device: wake word → dictate an event → agent reads it back → say "yes" → event appears in Google Calendar within a few seconds → app returns to wake-word listening
+- [x] 4.4 Saying "no" to the read-back does not create an event
+- [x] 4.5 Dictating a time that conflicts with an existing event causes the agent to voice the conflict before creating anything
+- [x] 4.6 Revoking Calendar access (simulated 401) mid-session ends the session, stops wake-word listening, and returns to the sign-in screen
+- [x] 4.7 The on-screen status stays glanceable (no dense text) throughout a session
 
 ### Phase 5: ElevenLabs agent dashboard configuration (non-code)
 
 #### Manual
 
-- [ ] 5.1 A test conversation confirms the agent always reads back and waits for a spoken confirmation before it calls `create_event`
-- [ ] 5.2 A test conversation where the user says "no" confirms the tool is never called
-- [ ] 5.3 The configured tool's parameter names/types match the Phase 2 handler exactly (a mismatch would fail silently per ElevenLabs' case-sensitive matching)
+- [x] 5.1 A test conversation confirms the agent always reads back and waits for a spoken confirmation before it calls `create_event`
+- [x] 5.2 A test conversation where the user says "no" confirms the tool is never called
+- [x] 5.3 The configured tool's parameter names/types match the Phase 2 handler exactly (a mismatch would fail silently per ElevenLabs' case-sensitive matching)
