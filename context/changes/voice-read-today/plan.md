@@ -285,16 +285,16 @@ None — additive feature, no existing data or schema changes.
 
 #### Automated
 
-- [x] 3.1 Unit tests pass: `npm test`
-- [x] 3.2 Type checking passes: `npx tsc --noEmit`
-- [x] 3.3 Linting passes: `npm run lint`
+- [x] 3.1 Unit tests pass: `npm test` — d17f7ea
+- [x] 3.2 Type checking passes: `npx tsc --noEmit` — d17f7ea
+- [x] 3.3 Linting passes: `npm run lint` — d17f7ea
 
 ### Phase 4: ElevenLabs TTS client + local playback file
 
 #### Automated
 
-- [ ] 4.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 4.2 Linting passes: `npm run lint`
+- [x] 4.1 Type checking passes: `npx tsc --noEmit`
+- [x] 4.2 Linting passes: `npm run lint`
 
 #### Manual
 
