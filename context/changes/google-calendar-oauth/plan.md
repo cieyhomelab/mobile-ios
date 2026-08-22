@@ -77,6 +77,8 @@ Get `@react-native-google-signin/google-signin` installed, configured, and linke
 
 **Contract**: Add `"bundleIdentifier": "com.mkulesza.voiceassistant"` under the existing `"ios"` object.
 
+**Addendum (post-implementation, impl-review F2)**: The Phase 1 commit also set `"package": "com.mkulesza.voiceassistant"` under the existing `"android"` object, mirroring the iOS identifier. This wasn't part of the original contract — Android is out of scope for this Foundation (see "What We're NOT Doing") — but it's inert without a matching Android OAuth client and consistent to leave as-is.
+
 #### 3. `app.json` — config plugin
 
 **File**: `app.json`
@@ -210,27 +212,27 @@ Not applicable — no existing data or prior auth system to migrate from.
 
 #### Automated
 
-- [ ] 1.1 Dependency installs cleanly: `npm install`
-- [ ] 1.2 Type checking passes: `npx tsc --noEmit`
-- [ ] 1.3 `expo prebuild --clean` completes without error
+- [x] 1.1 Dependency installs cleanly: `npm install` — 8629962
+- [x] 1.2 Type checking passes: `npx tsc --noEmit` — 8629962
+- [x] 1.3 `expo prebuild --clean` completes without error — 8629962
 
 #### Manual
 
-- [ ] 1.4 Google Cloud Console shows an iOS OAuth client and a Web OAuth client, consent screen in Testing status with `maciej.kulesza@gmail.com` as a test user
-- [ ] 1.5 `npx expo run:ios` builds and launches the app on a simulator or device, still showing the existing (unmodified) Home tab content
-- [ ] 1.6 No crash or red-screen error on launch
+- [x] 1.4 Google Cloud Console shows an iOS OAuth client and a Web OAuth client, consent screen in Testing status with `maciej.kulesza@gmail.com` as a test user — 8629962
+- [x] 1.5 `npx expo run:ios` builds and launches the app on a simulator or device, still showing the existing (unmodified) Home tab content — 8629962
+- [x] 1.6 No crash or red-screen error on launch — 8629962
 
 ### Phase 2: Auth flow, connect screen, and Calendar API verification
 
 #### Automated
 
-- [ ] 2.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit` — 676d299
+- [x] 2.2 Linting passes: `npm run lint` — 676d299
 
 #### Manual
 
-- [ ] 2.3 Cold-launching the dev client with no prior session shows the connect button
-- [ ] 2.4 Tapping it opens Google's native sign-in UI and, after granting access, the screen shows real upcoming events
-- [ ] 2.5 Force-quitting and relaunching skips the button and goes straight to the event list
-- [ ] 2.6 Cancelling/denying sign-in shows the inline error and leaves the button tappable again
-- [ ] 2.7 Revoking access and retrying clears the session and returns to the connect screen
+- [x] 2.3 Cold-launching the dev client with no prior session shows the connect button — 676d299
+- [x] 2.4 Tapping it opens Google's native sign-in UI and, after granting access, the screen shows real upcoming events — 676d299
+- [x] 2.5 Force-quitting and relaunching skips the button and goes straight to the event list — 676d299
+- [x] 2.6 Cancelling/denying sign-in shows the inline error and leaves the button tappable again — 676d299
+- [x] 2.7 Revoking access and retrying clears the session and returns to the connect screen — 676d299

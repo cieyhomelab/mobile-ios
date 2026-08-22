@@ -1,61 +1,119 @@
-import * as Device from 'expo-device';
-import { Platform, StyleSheet } from 'react-native';
+import { useCallback, useEffect, useState } from 'react';
+import { ActivityIndicator, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { AnimatedIcon } from '@/components/animated-icon';
-import { HintRow } from '@/components/hint-row';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
-import { WebBadge } from '@/components/web-badge';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
+import { CalendarApiError, CalendarEvent, listUpcomingEvents } from '@/lib/google-calendar-api';
+import {
+  configureGoogleAuth,
+  getAccessToken,
+  signInInteractively,
+  signInSilently,
+  signOutLocally,
+} from '@/lib/google-calendar-auth';
 
-function getDevMenuHint() {
-  if (Platform.OS === 'web') {
-    return <ThemedText type="small">use browser devtools</ThemedText>;
-  }
-  if (Device.isDevice) {
-    return (
-      <ThemedText type="small">
-        shake device or press <ThemedText type="code">m</ThemedText> in terminal
-      </ThemedText>
-    );
-  }
-  const shortcut = Platform.OS === 'android' ? 'cmd+m (or ctrl+m)' : 'cmd+d';
-  return (
-    <ThemedText type="small">
-      press <ThemedText type="code">{shortcut}</ThemedText>
-    </ThemedText>
-  );
-}
+type ScreenState = 'loading' | 'signedOut' | 'signedIn';
 
 export default function HomeScreen() {
+  const [state, setState] = useState<ScreenState>('loading');
+  const [events, setEvents] = useState<CalendarEvent[]>([]);
+  const [error, setError] = useState<string | null>(null);
+  const [isConnecting, setIsConnecting] = useState(false);
+
+  const loadEvents = useCallback(async (accessToken: string) => {
+    try {
+      const upcoming = await listUpcomingEvents(accessToken);
+      setEvents(upcoming);
+      setError(null);
+      setState('signedIn');
+    } catch (err) {
+      if (err instanceof CalendarApiError && err.status === 401) {
+        await signOutLocally();
+        setEvents([]);
+        setState('signedOut');
+        return;
+      }
+      setError("Couldn't refresh events");
+      setState((prev) => (prev === 'signedIn' ? 'signedIn' : 'signedOut'));
+    }
+  }, []);
+
+  useEffect(() => {
+    (async () => {
+      configureGoogleAuth();
+      const silentlySignedIn = await signInSilently();
+      if (!silentlySignedIn) {
+        setState('signedOut');
+        return;
+      }
+      const accessToken = await getAccessToken();
+      if (!accessToken) {
+        setState('signedOut');
+        return;
+      }
+      await loadEvents(accessToken);
+    })();
+  }, [loadEvents]);
+
+  const handleConnect = useCallback(async () => {
+    if (isConnecting) return;
+    setIsConnecting(true);
+    setError(null);
+    try {
+      const result = await signInInteractively();
+      if ('error' in result) {
+        setError(result.error);
+        return;
+      }
+      await loadEvents(result.accessToken);
+    } finally {
+      setIsConnecting(false);
+    }
+  }, [isConnecting, loadEvents]);
+
   return (
     <ThemedView style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
-        <ThemedView style={styles.heroSection}>
-          <AnimatedIcon />
-          <ThemedText type="title" style={styles.title}>
-            Welcome to&nbsp;Expo
-          </ThemedText>
-        </ThemedView>
-
-        <ThemedText type="code" style={styles.code}>
-          get started
+        <ThemedText type="title" style={styles.title}>
+          Google Calendar
         </ThemedText>
 
-        <ThemedView type="backgroundElement" style={styles.stepContainer}>
-          <HintRow
-            title="Try editing"
-            hint={<ThemedText type="code">src/app/index.tsx</ThemedText>}
-          />
-          <HintRow title="Dev tools" hint={getDevMenuHint()} />
-          <HintRow
-            title="Fresh start"
-            hint={<ThemedText type="code">npm run reset-project</ThemedText>}
-          />
-        </ThemedView>
+        {state === 'loading' && <ActivityIndicator />}
 
-        {Platform.OS === 'web' && <WebBadge />}
+        {state === 'signedOut' && (
+          <>
+            <Pressable
+              disabled={isConnecting}
+              style={({ pressed }) => pressed && styles.pressed}
+              onPress={() => void handleConnect()}>
+              <ThemedView type="backgroundSelected" style={styles.button}>
+                <ThemedText type="default">
+                  {isConnecting ? 'Connecting…' : 'Connect Google Calendar'}
+                </ThemedText>
+              </ThemedView>
+            </Pressable>
+            {error !== null && <ThemedText type="small">{error}</ThemedText>}
+          </>
+        )}
+
+        {state === 'signedIn' && (
+          <>
+            {error !== null && <ThemedText type="small">{error}</ThemedText>}
+            <ThemedView type="backgroundElement" style={styles.eventList}>
+              {events.length === 0 && <ThemedText type="small">No upcoming events</ThemedText>}
+              {events.map((event) => (
+                <ThemedView key={event.id} style={styles.eventRow}>
+                  <ThemedText type="default">{event.summary}</ThemedText>
+                  <ThemedText type="small" themeColor="textSecondary">
+                    {event.start}
+                  </ThemedText>
+                </ThemedView>
+              ))}
+            </ThemedView>
+          </>
+        )}
       </SafeAreaView>
     </ThemedView>
   );
@@ -71,28 +129,30 @@ const styles = StyleSheet.create({
     flex: 1,
     paddingHorizontal: Spacing.four,
     alignItems: 'center',
-    gap: Spacing.three,
+    justifyContent: 'center',
+    gap: Spacing.four,
     paddingBottom: BottomTabInset + Spacing.three,
     maxWidth: MaxContentWidth,
-  },
-  heroSection: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    flex: 1,
-    paddingHorizontal: Spacing.four,
-    gap: Spacing.four,
   },
   title: {
     textAlign: 'center',
   },
-  code: {
-    textTransform: 'uppercase',
+  button: {
+    paddingHorizontal: Spacing.four,
+    paddingVertical: Spacing.three,
+    borderRadius: Spacing.three,
   },
-  stepContainer: {
+  pressed: {
+    opacity: 0.7,
+  },
+  eventList: {
     gap: Spacing.three,
     alignSelf: 'stretch',
     paddingHorizontal: Spacing.three,
     paddingVertical: Spacing.four,
     borderRadius: Spacing.four,
+  },
+  eventRow: {
+    gap: Spacing.half,
   },
 });
