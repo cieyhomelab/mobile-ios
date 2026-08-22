@@ -1,82 +1,75 @@
-import { useCallback, useEffect, useRef } from 'react';
+import { useCallback, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import {
-  ConversationProvider,
-  ConversationStatus,
-  useConversationControls,
-  useConversationStatus,
-} from '@elevenlabs/react-native';
 
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useGoogleCalendarSession } from '@/hooks/use-google-calendar-session';
+import { useVoiceRecorder } from '@/lib/audio-recorder';
 import { handleCreateEventTool } from '@/lib/create-event-tool';
-import { DraftEvent } from '@/lib/google-calendar-api';
-import { ELEVENLABS_AGENT_ID } from '@/lib/voice-config';
-import { useWakeWordListener, WakeWordListener } from '@/lib/wake-word';
+import { parseEventFromTranscript } from '@/lib/event-parser';
+import type { DraftEvent } from '@/lib/google-calendar-api';
+import { transcribeAudio } from '@/lib/voice-stt';
 
 export default function HomeScreen() {
-  return (
-    <ConversationProvider agentId={ELEVENLABS_AGENT_ID}>
-      <VoiceScreen />
-    </ConversationProvider>
-  );
+  return <VoiceScreen />;
 }
+
+type ScreenPhase = 'idle' | 'recording' | 'transcribing' | 'parsing' | 'confirming' | 'creating';
 
 function VoiceScreen() {
   const session = useGoogleCalendarSession();
-  const { startSession, endSession } = useConversationControls();
-  const { status, message } = useConversationStatus();
+  const recorder = useVoiceRecorder();
+  const [phase, setPhase] = useState<ScreenPhase>('idle');
+  const [draft, setDraft] = useState<DraftEvent | null>(null);
+  const [pipelineError, setPipelineError] = useState<string | null>(null);
+  const [resultMessage, setResultMessage] = useState<string | null>(null);
 
-  const wakeWordRef = useRef<WakeWordListener | null>(null);
-  const suppressAutoResumeRef = useRef(false);
+  const handlePressIn = useCallback(() => {
+    if (session.state !== 'signedIn' || phase !== 'idle') return;
+    setPipelineError(null);
+    setResultMessage(null);
+    setPhase('recording');
+    recorder.start().catch((err: unknown) => {
+      setPipelineError(err instanceof Error ? err.message : 'Could not start recording');
+      setPhase('idle');
+    });
+  }, [session.state, phase, recorder]);
 
-  const handleCreateEvent = useCallback(
-    (params: DraftEvent) =>
-      handleCreateEventTool(params, () => {
-        suppressAutoResumeRef.current = true;
-        endSession();
-        void session.forceSignOut();
-      }),
-    [endSession, session],
-  );
-
-  const handleWake = useCallback(() => {
+  const handlePressOut = useCallback(() => {
+    if (phase !== 'recording') return;
     void (async () => {
-      await wakeWordRef.current?.stop();
-      suppressAutoResumeRef.current = false;
-      startSession({
-        agentId: ELEVENLABS_AGENT_ID,
-        clientTools: { create_event: handleCreateEvent },
-        dynamicVariables: {
-          currentDateTime: new Date().toISOString(),
-          timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone,
-        },
-        onDisconnect: () => {
-          if (!suppressAutoResumeRef.current) void wakeWordRef.current?.start();
-        },
-        onError: () => {
-          if (!suppressAutoResumeRef.current) void wakeWordRef.current?.start();
-        },
-      });
+      try {
+        const uri = await recorder.stop();
+        setPhase('transcribing');
+        const transcript = await transcribeAudio(uri);
+        setPhase('parsing');
+        const parsed = await parseEventFromTranscript(transcript);
+        setDraft(parsed);
+        setPhase('confirming');
+      } catch (err) {
+        setPipelineError(err instanceof Error ? err.message : 'Something went wrong');
+        setPhase('idle');
+      }
     })();
-  }, [startSession, handleCreateEvent]);
+  }, [phase, recorder]);
 
-  const wakeWord = useWakeWordListener(handleWake);
+  const handleConfirm = useCallback(() => {
+    if (!draft) return;
+    setPhase('creating');
+    void (async () => {
+      const message = await handleCreateEventTool(draft, () => void session.forceSignOut());
+      setResultMessage(message);
+      setDraft(null);
+      setPhase('idle');
+    })();
+  }, [draft, session]);
 
-  useEffect(() => {
-    wakeWordRef.current = wakeWord;
-  }, [wakeWord]);
-
-  useEffect(() => {
-    if (session.state !== 'signedIn') return;
-    void wakeWordRef.current?.start();
-    return () => {
-      void wakeWordRef.current?.stop();
-    };
-  }, [session.state]);
+  const handleCancel = useCallback(() => {
+    setDraft(null);
+    setPhase('idle');
+  }, []);
 
   return (
     <ThemedView style={styles.container}>
@@ -103,10 +96,30 @@ function VoiceScreen() {
           </>
         )}
 
-        {session.state === 'signedIn' && (
+        {session.state === 'signedIn' && phase !== 'confirming' && (
           <>
-            {status === 'connecting' && <ActivityIndicator />}
-            <ThemedText type="default">{statusLabel(status, message)}</ThemedText>
+            <Pressable
+              disabled={phase !== 'idle' && phase !== 'recording'}
+              onPressIn={handlePressIn}
+              onPressOut={handlePressOut}
+              style={({ pressed }) => pressed && styles.pressed}>
+              <ThemedView type="backgroundSelected" style={styles.button}>
+                {(phase === 'transcribing' || phase === 'parsing' || phase === 'creating') && (
+                  <ActivityIndicator />
+                )}
+                <ThemedText type="default">{statusLabel(phase)}</ThemedText>
+              </ThemedView>
+            </Pressable>
+            {pipelineError !== null && (
+              <ThemedText type="small" themeColor="textSecondary">
+                {pipelineError}
+              </ThemedText>
+            )}
+            {resultMessage !== null && (
+              <ThemedText type="small" themeColor="textSecondary">
+                {resultMessage}
+              </ThemedText>
+            )}
             {session.error !== null && (
               <ThemedText type="small" themeColor="textSecondary">
                 {session.error}
@@ -114,23 +127,59 @@ function VoiceScreen() {
             )}
           </>
         )}
+
+        {session.state === 'signedIn' && phase === 'confirming' && draft && (
+          <>
+            <ThemedText type="default">{draft.title}</ThemedText>
+            <ThemedText type="small" themeColor="textSecondary">
+              {formatDraftTime(draft)}
+            </ThemedText>
+            <ThemedView style={styles.confirmRow}>
+              <Pressable style={({ pressed }) => pressed && styles.pressed} onPress={handleConfirm}>
+                <ThemedView type="backgroundSelected" style={styles.button}>
+                  <ThemedText type="default">Confirm</ThemedText>
+                </ThemedView>
+              </Pressable>
+              <Pressable style={({ pressed }) => pressed && styles.pressed} onPress={handleCancel}>
+                <ThemedView type="backgroundElement" style={styles.button}>
+                  <ThemedText type="default">Cancel</ThemedText>
+                </ThemedView>
+              </Pressable>
+            </ThemedView>
+          </>
+        )}
       </SafeAreaView>
     </ThemedView>
   );
 }
 
-function statusLabel(status: ConversationStatus, message?: string): string {
-  switch (status) {
-    case 'connecting':
-      return 'Connecting…';
-    case 'connected':
-      return 'Listening — say the event details';
-    case 'error':
-      return message ?? 'Something went wrong';
-    case 'disconnected':
+function statusLabel(phase: ScreenPhase): string {
+  switch (phase) {
+    case 'recording':
+      return 'Listening… release to finish';
+    case 'transcribing':
+      return 'Transcribing…';
+    case 'parsing':
+      return 'Understanding…';
+    case 'creating':
+      return 'Creating event…';
+    case 'idle':
     default:
-      return 'Say the wake word to create an event';
+      return 'Hold to create an event';
   }
+}
+
+function formatDraftTime(draft: DraftEvent): string {
+  const start = new Date(draft.startDateTime);
+  const formatted = start.toLocaleString(undefined, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
+  const durationMinutes = draft.durationMinutes ?? 60;
+  return `${formatted} · ${durationMinutes} min`;
 }
 
 const styles = StyleSheet.create({
@@ -155,8 +204,14 @@ const styles = StyleSheet.create({
     paddingHorizontal: Spacing.four,
     paddingVertical: Spacing.three,
     borderRadius: Spacing.three,
+    alignItems: 'center',
+    gap: Spacing.two,
   },
   pressed: {
     opacity: 0.7,
+  },
+  confirmRow: {
+    flexDirection: 'row',
+    gap: Spacing.three,
   },
 });
