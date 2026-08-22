@@ -224,13 +224,13 @@ Not applicable — no existing data or prior auth system to migrate from.
 
 #### Automated
 
-- [x] 2.1 Type checking passes: `npx tsc --noEmit`
-- [x] 2.2 Linting passes: `npm run lint`
+- [x] 2.1 Type checking passes: `npx tsc --noEmit` — 676d299
+- [x] 2.2 Linting passes: `npm run lint` — 676d299
 
 #### Manual
 
-- [x] 2.3 Cold-launching the dev client with no prior session shows the connect button
-- [x] 2.4 Tapping it opens Google's native sign-in UI and, after granting access, the screen shows real upcoming events
-- [x] 2.5 Force-quitting and relaunching skips the button and goes straight to the event list
-- [x] 2.6 Cancelling/denying sign-in shows the inline error and leaves the button tappable again
-- [x] 2.7 Revoking access and retrying clears the session and returns to the connect screen
+- [x] 2.3 Cold-launching the dev client with no prior session shows the connect button — 676d299
+- [x] 2.4 Tapping it opens Google's native sign-in UI and, after granting access, the screen shows real upcoming events — 676d299
+- [x] 2.5 Force-quitting and relaunching skips the button and goes straight to the event list — 676d299
+- [x] 2.6 Cancelling/denying sign-in shows the inline error and leaves the button tappable again — 676d299
+- [x] 2.7 Revoking access and retrying clears the session and returns to the connect screen — 676d299
