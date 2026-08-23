@@ -1,6 +1,50 @@
-# Welcome to your Expo app 👋
+# Voice Calendar Assistant
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+A hands-free Google Calendar assistant built with [Expo](https://expo.dev) and
+[expo-router](https://docs.expo.dev/router/introduction). Hold a button, speak,
+and it creates, checks, or deletes events on your Google Calendar — designed
+for use while driving.
+
+<img src="design/screens/3-home-listening.png" alt="Home screen, listening state" width="320" />
+
+## Features
+
+- **Create an event by voice** — "Dentist appointment tomorrow at 2pm for an hour"
+- **Check what's on today** — read back out loud via text-to-speech
+- **Delete an event by voice** — finds the matching event and asks for confirmation before deleting
+- Every create/delete action shows a confirm screen ("Did I get this right?") before touching your calendar
+- Sign-in via Google OAuth, scoped to calendar events only
+
+## How it works
+
+Every voice command goes through the same pipeline: record → transcribe →
+parse intent → act. "Create" and "delete" both stop at a confirm screen
+before touching your calendar; "what's on today" skips straight to a spoken
+readout.
+
+```mermaid
+flowchart TD
+    A[Hold mic button] --> B["Record audio (expo-audio)"]
+    B --> C["Speech-to-text (ElevenLabs Scribe)"]
+    C --> D["Parse intent (Claude Haiku, tool use)"]
+
+    D -->|create event| E[Draft event confirm screen]
+    D -->|delete event| F["Search Google Calendar for a match"]
+    D -->|"what's on today"| G[Fetch today's events]
+
+    E -->|Confirm| H["Create event (Google Calendar API)"]
+    F --> I[Confirm-delete screen]
+    I -->|Confirm| J["Delete event (Google Calendar API)"]
+    G --> K["Read events aloud (ElevenLabs text-to-speech)"]
+```
+
+## Tech stack
+
+- [Expo SDK 57](https://docs.expo.dev/versions/v57.0.0/) + expo-router, TypeScript
+- [@react-native-google-signin/google-signin](https://github.com/react-native-google-signin/google-signin) for OAuth, [Google Calendar API v3](https://developers.google.com/calendar/api/v3/reference) for events
+- [ElevenLabs](https://elevenlabs.io) for speech-to-text and text-to-speech
+- [Anthropic Claude](https://www.anthropic.com) (Haiku, forced tool use) to turn a transcript into structured event data
+- `expo-symbols` (SF Symbols on iOS), `expo-audio`, native tabs — this app needs a real native build; it isn't fully testable in `expo start --web`
 
 ## Get started
 
@@ -10,47 +54,49 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install
    ```
 
-2. Start the app
+2. Add your API keys to `.env.local` in the project root:
 
    ```bash
-   npx expo start
+   EXPO_PUBLIC_ANTHROPIC_API_KEY=sk-ant-...      # console.anthropic.com/settings/keys
+   EXPO_PUBLIC_ELEVENLABS_API_KEY=...            # elevenlabs.io/app/settings/api-keys
+   EXPO_PUBLIC_ELEVENLABS_VOICE_ID=...           # elevenlabs.io/app/voice-library
    ```
 
-In the output, you'll find options to open the app in a
+   Google Sign-In client IDs are already configured in
+   `src/lib/google-calendar-auth.ts` for this project. If you fork this repo,
+   swap in your own OAuth client IDs from the
+   [Google Cloud Console](https://console.cloud.google.com/apis/credentials).
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+3. Run it. Voice features depend on native modules (`expo-audio`,
+   `expo-symbols`, native tabs), so use a real build rather than Expo Go or web:
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+   ```bash
+   npx expo run:ios       # or: npm run ios
+   npx expo run:android   # or: npm run android
+   ```
 
-## Get a fresh project
+   `npx expo start --web` also works for previewing layout/screens quickly,
+   but Google Sign-In and audio recording aren't available there.
 
-When you're ready, run:
+### Testing & linting
 
 ```bash
-npm run reset-project
+npm test          # Jest (jest-expo preset)
+npm run lint       # expo lint (ESLint)
+npx tsc --noEmit   # TypeScript
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Project structure
 
-### Other setup steps
+- `src/app/` — expo-router routes; `index.tsx` is the voice assistant screen
+- `src/lib/` — voice pipeline, Google Calendar API/auth, and Claude-based transcript parsing (each paired with a `*.test.ts`)
+- `src/hooks/` — session state (`use-google-calendar-session.ts`) and theme hooks
+- `src/constants/` — `theme.ts` (app-wide light/dark tokens) and `voice-theme.ts` (fixed dark palette for the voice screens)
+- `design/` — pen.dev source and exported screen mockups (`design/screens/`)
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+See `CLAUDE.md` / `AGENTS.md` for more detail on conventions and iOS build gotchas.
 
 ## Learn more
 
-To learn more about developing your project with Expo, look at the following resources:
-
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+- [Expo documentation](https://docs.expo.dev/versions/v57.0.0/)
+- [Expo Router](https://docs.expo.dev/router/introduction)
