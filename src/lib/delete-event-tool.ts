@@ -8,8 +8,18 @@ export type EventMatch = {
 };
 
 const UPCOMING_WINDOW_DAYS = 30;
+const TIME_HINT_WINDOW_MINUTES = 30;
 
-function resolveSearchWindow(dateHint?: string): { timeMin: string; timeMax: string } {
+function resolveSearchWindow(dateHint?: string, timeHint?: string): { timeMin: string; timeMax: string } {
+  if (dateHint && timeHint) {
+    const [year, month, day] = dateHint.split('-').map(Number);
+    const [hour, minute] = timeHint.split(':').map(Number);
+    const target = new Date(year, month - 1, day, hour, minute, 0, 0);
+    const timeMin = new Date(target.getTime() - TIME_HINT_WINDOW_MINUTES * 60 * 1000);
+    const timeMax = new Date(target.getTime() + TIME_HINT_WINDOW_MINUTES * 60 * 1000);
+    return { timeMin: timeMin.toISOString(), timeMax: timeMax.toISOString() };
+  }
+
   if (dateHint) {
     const [year, month, day] = dateHint.split('-').map(Number);
     const timeMin = new Date(year, month - 1, day, 0, 0, 0, 0);
@@ -32,7 +42,7 @@ export async function findEventToDelete(
   }
 
   try {
-    const { timeMin, timeMax } = resolveSearchWindow(target.dateHint);
+    const { timeMin, timeMax } = resolveSearchWindow(target.dateHint, target.timeHint);
     const matches = await searchEvents(accessToken, target.searchQuery, timeMin, timeMax);
 
     if (matches.length === 0) {

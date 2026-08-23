@@ -1,7 +1,7 @@
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
 import { SymbolView, type SymbolViewProps } from 'expo-symbols';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, StyleSheet, Text, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { CalendarAccessNote } from '@/components/calendar-access-note';
@@ -188,6 +188,17 @@ function VoiceScreen() {
     setPhase('idle');
   }, [player]);
 
+  const handleLogout = useCallback(() => {
+    setPhase('idle');
+    setDraft(null);
+    setDeleteTarget(null);
+    setPipelineError(null);
+    setResultMessage(null);
+    void (async () => {
+      await session.forceSignOut();
+    })();
+  }, [session]);
+
   return (
     <View style={styles.root}>
       <SafeAreaView style={styles.safeArea}>
@@ -211,6 +222,7 @@ function VoiceScreen() {
             onStopSpeaking={handleStopSpeaking}
             onDeletePressIn={handleDeletePressIn}
             onDeletePressOut={handleDeletePressOut}
+            onLogout={handleLogout}
           />
         )}
 
@@ -276,6 +288,7 @@ type HomeViewProps = {
   onStopSpeaking: () => void;
   onDeletePressIn: () => void;
   onDeletePressOut: () => void;
+  onLogout: () => void;
 };
 
 function HomeView({
@@ -289,10 +302,19 @@ function HomeView({
   onStopSpeaking,
   onDeletePressIn,
   onDeletePressOut,
+  onLogout,
 }: HomeViewProps) {
   const isListening = phase === 'recording';
   const micDisabled = phase !== 'idle' && phase !== 'recording';
+  const logoutDisabled = phase !== 'idle';
   const status = statusText(phase);
+
+  const handleLogoutPress = () => {
+    Alert.alert('Log out?', 'You can reconnect with the same or a different Google account.', [
+      { text: 'Cancel', style: 'cancel' },
+      { text: 'Log out', style: 'destructive', onPress: onLogout },
+    ]);
+  };
 
   return (
     <View style={styles.homeScreen}>
@@ -301,10 +323,13 @@ function HomeView({
           <Text style={styles.greeting}>{getGreeting()}</Text>
           <Text style={styles.headline}>What would you like to do?</Text>
         </View>
-        <View style={styles.connectedBadge}>
+        <Pressable
+          disabled={logoutDisabled}
+          onPress={handleLogoutPress}
+          style={({ pressed }) => [styles.connectedBadge, pressed && !logoutDisabled && styles.pressed]}>
           <SymbolView name={icons.checkmark} size={14} tintColor={VoiceColors.accent} />
           <Text style={styles.connectedBadgeText}>Connected</Text>
-        </View>
+        </Pressable>
       </View>
 
       <View style={styles.micArea}>

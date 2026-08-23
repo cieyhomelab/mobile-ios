@@ -163,6 +163,17 @@ describe('searchEvents', () => {
       searchEvents('token', 'dentist', '2026-08-23T00:00:00.000Z', '2026-09-22T00:00:00.000Z'),
     ).rejects.toThrow(CalendarApiError);
   });
+
+  it('omits the q parameter when query is empty', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: async () => ({}) });
+
+    await searchEvents('token', '', '2026-08-23T00:00:00.000Z', '2026-09-22T00:00:00.000Z');
+
+    const url = (global.fetch as jest.Mock).mock.calls[0][0] as string;
+    const params = new URLSearchParams(url.split('?')[1]);
+
+    expect(params.has('q')).toBe(false);
+  });
 });
 
 describe('deleteEvent', () => {
