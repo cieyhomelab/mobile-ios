@@ -9,8 +9,14 @@ import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { useGoogleCalendarSession } from '@/hooks/use-google-calendar-session';
 import { useVoiceRecorder } from '@/lib/audio-recorder';
 import { handleCreateEventTool } from '@/lib/create-event-tool';
-import { parseEventFromTranscript } from '@/lib/event-parser';
-import { CalendarApiError, listTodayEvents, type DraftEvent } from '@/lib/google-calendar-api';
+import { findEventToDelete, handleDeleteEventTool, type EventMatch } from '@/lib/delete-event-tool';
+import { parseDeleteTargetFromTranscript, parseEventFromTranscript } from '@/lib/event-parser';
+import {
+  CalendarApiError,
+  listTodayEvents,
+  type CalendarEvent,
+  type DraftEvent,
+} from '@/lib/google-calendar-api';
 import { formatTodayReadout } from '@/lib/today-readout';
 import { transcribeAudio } from '@/lib/voice-stt';
 import { synthesizeSpeech } from '@/lib/voice-tts';
@@ -27,7 +33,12 @@ type ScreenPhase =
   | 'confirming'
   | 'creating'
   | 'fetchingToday'
-  | 'speakingToday';
+  | 'speakingToday'
+  | 'recordingDelete'
+  | 'transcribingDelete'
+  | 'findingEvent'
+  | 'confirmingDelete'
+  | 'deleting';
 
 function VoiceScreen() {
   const session = useGoogleCalendarSession();
@@ -36,6 +47,7 @@ function VoiceScreen() {
   const playerStatus = useAudioPlayerStatus(player);
   const [phase, setPhase] = useState<ScreenPhase>('idle');
   const [draft, setDraft] = useState<DraftEvent | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<EventMatch | null>(null);
   const [pipelineError, setPipelineError] = useState<string | null>(null);
   const [resultMessage, setResultMessage] = useState<string | null>(null);
 
@@ -90,6 +102,57 @@ function VoiceScreen() {
 
   const handleCancel = useCallback(() => {
     setDraft(null);
+    setPhase('idle');
+  }, []);
+
+  const handleDeletePressIn = useCallback(() => {
+    if (session.state !== 'signedIn' || phase !== 'idle') return;
+    setPipelineError(null);
+    setResultMessage(null);
+    setPhase('recordingDelete');
+    recorder.start().catch((err: unknown) => {
+      setPipelineError(err instanceof Error ? err.message : 'Could not start recording');
+      setPhase('idle');
+    });
+  }, [session.state, phase, recorder]);
+
+  const handleDeletePressOut = useCallback(() => {
+    if (phase !== 'recordingDelete') return;
+    void (async () => {
+      try {
+        const uri = await recorder.stop();
+        setPhase('transcribingDelete');
+        const transcript = await transcribeAudio(uri);
+        setPhase('findingEvent');
+        const target = await parseDeleteTargetFromTranscript(transcript);
+        const match = await findEventToDelete(target, () => void session.forceSignOut());
+        if ('error' in match) {
+          setPipelineError(match.error);
+          setPhase('idle');
+          return;
+        }
+        setDeleteTarget(match);
+        setPhase('confirmingDelete');
+      } catch (err) {
+        setPipelineError(err instanceof Error ? err.message : 'Something went wrong');
+        setPhase('idle');
+      }
+    })();
+  }, [phase, recorder, session]);
+
+  const handleConfirmDelete = useCallback(() => {
+    if (!deleteTarget) return;
+    setPhase('deleting');
+    void (async () => {
+      const message = await handleDeleteEventTool(deleteTarget.event.id, () => void session.forceSignOut());
+      setResultMessage(message);
+      setDeleteTarget(null);
+      setPhase('idle');
+    })();
+  }, [deleteTarget, session]);
+
+  const handleCancelDelete = useCallback(() => {
+    setDeleteTarget(null);
     setPhase('idle');
   }, []);
 
@@ -149,7 +212,7 @@ function VoiceScreen() {
           </>
         )}
 
-        {session.state === 'signedIn' && phase !== 'confirming' && (
+        {session.state === 'signedIn' && phase !== 'confirming' && phase !== 'confirmingDelete' && (
           <>
             <Pressable
               disabled={phase !== 'idle' && phase !== 'recording'}
@@ -182,6 +245,18 @@ function VoiceScreen() {
                 </ThemedView>
               </Pressable>
             )}
+            <Pressable
+              disabled={phase !== 'idle' && phase !== 'recordingDelete'}
+              onPressIn={handleDeletePressIn}
+              onPressOut={handleDeletePressOut}
+              style={({ pressed }) => pressed && styles.pressed}>
+              <ThemedView type="backgroundSelected" style={styles.button}>
+                {(phase === 'transcribingDelete' || phase === 'findingEvent' || phase === 'deleting') && (
+                  <ActivityIndicator />
+                )}
+                <ThemedText type="default">{deleteStatusLabel(phase)}</ThemedText>
+              </ThemedView>
+            </Pressable>
             {pipelineError !== null && (
               <ThemedText type="small" themeColor="textSecondary">
                 {pipelineError}
@@ -220,6 +295,32 @@ function VoiceScreen() {
             </ThemedView>
           </>
         )}
+
+        {session.state === 'signedIn' && phase === 'confirmingDelete' && deleteTarget && (
+          <>
+            <ThemedText type="default">{deleteTarget.event.summary}</ThemedText>
+            <ThemedText type="small" themeColor="textSecondary">
+              {formatEventTime(deleteTarget.event)}
+            </ThemedText>
+            {deleteTarget.matchCount > 1 && (
+              <ThemedText type="small" themeColor="textSecondary">
+                1 of {deleteTarget.matchCount} matching events — is this the one?
+              </ThemedText>
+            )}
+            <ThemedView style={styles.confirmRow}>
+              <Pressable style={({ pressed }) => pressed && styles.pressed} onPress={handleConfirmDelete}>
+                <ThemedView type="backgroundSelected" style={styles.button}>
+                  <ThemedText type="default">Delete</ThemedText>
+                </ThemedView>
+              </Pressable>
+              <Pressable style={({ pressed }) => pressed && styles.pressed} onPress={handleCancelDelete}>
+                <ThemedView type="backgroundElement" style={styles.button}>
+                  <ThemedText type="default">Cancel</ThemedText>
+                </ThemedView>
+              </Pressable>
+            </ThemedView>
+          </>
+        )}
       </SafeAreaView>
     </ThemedView>
   );
@@ -239,6 +340,33 @@ function statusLabel(phase: ScreenPhase): string {
     default:
       return 'Hold to create an event';
   }
+}
+
+function deleteStatusLabel(phase: ScreenPhase): string {
+  switch (phase) {
+    case 'recordingDelete':
+      return 'Listening… release to finish';
+    case 'transcribingDelete':
+      return 'Transcribing…';
+    case 'findingEvent':
+      return 'Finding event…';
+    case 'deleting':
+      return 'Deleting event…';
+    case 'idle':
+    default:
+      return 'Hold to delete an event';
+  }
+}
+
+function formatEventTime(event: CalendarEvent): string {
+  const start = new Date(event.start);
+  return start.toLocaleString(undefined, {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+    hour: 'numeric',
+    minute: '2-digit',
+  });
 }
 
 function formatDraftTime(draft: DraftEvent): string {

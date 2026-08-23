@@ -290,24 +290,24 @@ None — no data model or persisted state changes; this only adds new client-sid
 
 #### Automated
 
-- [x] 3.1 Unit tests pass: `npm test -- delete-event-tool.test.ts`
-- [x] 3.2 Full test suite passes: `npm test`
-- [x] 3.3 Type checking passes: `npx tsc --noEmit`
-- [x] 3.4 Linting passes: `npm run lint`
+- [x] 3.1 Unit tests pass: `npm test -- delete-event-tool.test.ts` — 40ad363
+- [x] 3.2 Full test suite passes: `npm test` — 40ad363
+- [x] 3.3 Type checking passes: `npx tsc --noEmit` — 40ad363
+- [x] 3.4 Linting passes: `npm run lint` — 40ad363
 
 ### Phase 4: UI integration
 
 #### Automated
 
-- [ ] 4.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 4.2 Linting passes: `npm run lint`
-- [ ] 4.3 Full test suite still passes: `npm test`
+- [x] 4.1 Type checking passes: `npx tsc --noEmit`
+- [x] 4.2 Linting passes: `npm run lint`
+- [x] 4.3 Full test suite still passes: `npm test`
 
 #### Manual
 
-- [ ] 4.4 Holding the new button, describing an existing event, and confirming deletes exactly that event from Google Calendar within a few seconds
-- [ ] 4.5 Cancel on the delete-confirm screen leaves Google Calendar unchanged and returns to idle
-- [ ] 4.6 Describing an event with a specific day narrows the match to that day rather than matching a same-titled event on a different day
-- [ ] 4.7 When multiple similar events exist, the confirm screen's "N matching events" note appears and the shown event is the soonest upcoming one
-- [ ] 4.8 Describing an event that doesn't exist shows a "couldn't find a matching event" error and returns to idle without attempting a delete
-- [ ] 4.9 A revoked Calendar grant during the delete flow tears down the session exactly like the existing create/read-today flows
+- [x] 4.4 Holding the new button, describing an existing event, and confirming deletes exactly that event from Google Calendar within a few seconds
+- [x] 4.5 Cancel on the delete-confirm screen leaves Google Calendar unchanged and returns to idle
+- [x] 4.6 Describing an event with a specific day narrows the match to that day rather than matching a same-titled event on a different day
+- [x] 4.7 When multiple similar events exist, the confirm screen's "N matching events" note appears and the shown event is the soonest upcoming one
+- [x] 4.8 Describing an event that doesn't exist shows a "couldn't find a matching event" error and returns to idle without attempting a delete
+- [x] 4.9 A revoked Calendar grant during the delete flow tears down the session exactly like the existing create/read-today flows
