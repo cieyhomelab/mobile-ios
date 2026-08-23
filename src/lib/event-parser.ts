@@ -34,6 +34,81 @@ const EXTRACT_EVENT_TOOL = {
   },
 };
 
+export type DeleteSearchQuery = {
+  searchQuery: string;
+  dateHint?: string;
+};
+
+const EXTRACT_DELETE_TARGET_TOOL = {
+  name: 'extract_delete_target',
+  description: 'Extract a search query identifying which calendar event the user wants to delete from a spoken transcript.',
+  input_schema: {
+    type: 'object',
+    properties: {
+      searchQuery: {
+        type: 'string',
+        description: 'Keywords identifying the event, such as its title or topic.',
+      },
+      dateHint: {
+        type: 'string',
+        description:
+          'The specific day the event is on, as an ISO 8601 date (YYYY-MM-DD), only if the user mentioned a date or day (e.g. "tomorrow", "next Tuesday"). Omit if no date was mentioned.',
+      },
+    },
+    required: ['searchQuery'],
+  },
+};
+
+export async function parseDeleteTargetFromTranscript(transcript: string): Promise<DeleteSearchQuery> {
+  const now = new Date().toISOString();
+  const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: {
+      'x-api-key': ANTHROPIC_API_KEY,
+      'anthropic-version': '2023-06-01',
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      model: 'claude-haiku-4-5',
+      max_tokens: 1024,
+      tools: [EXTRACT_DELETE_TARGET_TOOL],
+      tool_choice: { type: 'tool', name: 'extract_delete_target' },
+      messages: [
+        {
+          role: 'user',
+          content: `Current date/time: ${now}\nTime zone: ${timeZone}\n\nTranscript: "${transcript}"`,
+        },
+      ],
+    }),
+  });
+
+  if (!response.ok) {
+    throw new ParseError(`Claude API request failed with status ${response.status}`);
+  }
+
+  const data: AnthropicMessagesResponse = await response.json();
+  const toolUseBlock = data.content.find(
+    (block): block is AnthropicToolUseBlock => block.type === 'tool_use',
+  );
+
+  if (!toolUseBlock) {
+    throw new ParseError('Claude response did not include a tool_use block');
+  }
+
+  const input = toolUseBlock.input as Partial<DeleteSearchQuery>;
+
+  if (!input.searchQuery) {
+    throw new ParseError('Claude tool_use input is missing required fields');
+  }
+
+  return {
+    searchQuery: input.searchQuery,
+    ...(input.dateHint !== undefined ? { dateHint: input.dateHint } : {}),
+  };
+}
+
 export async function parseEventFromTranscript(transcript: string): Promise<DraftEvent> {
   const now = new Date().toISOString();
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
