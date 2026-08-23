@@ -11,9 +11,9 @@ const UPCOMING_WINDOW_DAYS = 30;
 
 function resolveSearchWindow(dateHint?: string): { timeMin: string; timeMax: string } {
   if (dateHint) {
-    const day = new Date(dateHint);
-    const timeMin = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 0, 0, 0, 0);
-    const timeMax = new Date(day.getFullYear(), day.getMonth(), day.getDate(), 23, 59, 59, 999);
+    const [year, month, day] = dateHint.split('-').map(Number);
+    const timeMin = new Date(year, month - 1, day, 0, 0, 0, 0);
+    const timeMax = new Date(year, month - 1, day, 23, 59, 59, 999);
     return { timeMin: timeMin.toISOString(), timeMax: timeMax.toISOString() };
   }
 
