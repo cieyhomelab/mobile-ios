@@ -3,7 +3,7 @@ project: "voice-assistant"
 version: 1
 status: draft
 created: 2026-08-22
-updated: 2026-08-22
+updated: 2026-08-23
 prd_version: 1
 main_goal: speed
 top_blocker: time
@@ -30,6 +30,7 @@ While driving, the user can't safely type new calendar events or check upcoming 
 | ID   | Change ID                | Outcome (user can …)                                  | Prerequisites | PRD refs           | Status   |
 | ---- | ------------------------- | ------------------------------------------------------ | -------------- | ------------------- | -------- |
 | F-01 | `google-calendar-oauth`   | (foundation) Google Calendar OAuth sign-in wired        | —              | Access Control       | ready    |
+| F-02 | `onboarding-start-screen` | (foundation) Start screen with context before OAuth, just-in-time mic permission | F-01 | —           | proposed |
 | S-01 | `voice-create-event`      | Create a calendar event by voice, hands-free            | F-01           | US-01, FR-001..FR-005 | proposed |
 | S-02 | `voice-read-today`        | Ask by voice what's on today's calendar                 | F-01           | FR-006, FR-007       | proposed |
 | S-03 | `voice-delete-event`      | Delete a calendar event by voice                         | F-01, S-02      | FR-008, FR-009       | proposed |
@@ -60,6 +61,19 @@ Foundations below assume these are present and do NOT re-scaffold them.
 - **Unknowns:** —
 - **Risk:** A misconfigured OAuth scope or consent flow blocks every downstream flow, so it's sequenced first rather than bolted on inside S-01.
 - **Status:** ready
+
+### F-02: Onboarding / start screen
+
+- **Outcome:** (foundation) Before the Google OAuth prompt appears, the user sees a short start screen explaining why the app needs Calendar access — mitigating Google's own "sensitive scope" consent warning. Microphone access is requested just-in-time on the first record tap rather than at app launch, since iOS only shows the system permission dialog once per install.
+- **Change ID:** `onboarding-start-screen`
+- **PRD refs:** — (not yet captured in `prd.md`; surfaced during production-readiness review)
+- **Unlocks:** —
+- **Prerequisites:** F-01
+- **Parallel with:** S-01, S-02
+- **Blockers:** —
+- **Unknowns:** —
+- **Risk:** Users who don't understand why the app wants Calendar access are more likely to bail on the Google consent screen; conversely, over-explaining before the mic prompt reads as friction on a single-user personal app — keep both screens short and skippable-by-speed.
+- **Status:** proposed
 
 ## Slices
 
@@ -104,6 +118,7 @@ Foundations below assume these are present and do NOT re-scaffold them.
 | Roadmap ID | Change ID              | Suggested issue title                              | Ready for `/10x-plan` | Notes                              |
 | ---------- | ----------------------- | ---------------------------------------------------- | ---------------------- | ----------------------------------- |
 | F-01       | `google-calendar-oauth` | Wire up one-time Google Calendar OAuth sign-in       | yes                     | Run `/10x-plan google-calendar-oauth` |
+| F-02       | `onboarding-start-screen` | Add start screen before OAuth + just-in-time mic permission | no        | Blocked on F-01                     |
 | S-01       | `voice-create-event`    | Voice: create a calendar event (dictate → confirm → write) | no                | Blocked on F-01                     |
 | S-02       | `voice-read-today`      | Voice: ask what's on today's calendar                | no                      | Blocked on F-01                     |
 | S-03       | `voice-delete-event`    | Voice: delete a calendar event (confirm before delete) | no                    | Blocked on F-01, S-02               |
@@ -111,6 +126,13 @@ Foundations below assume these are present and do NOT re-scaffold them.
 ## Open Roadmap Questions
 
 1. **Does the Google OAuth consent screen need to run in "Testing" mode or full Google verification?** — Single personal user (yourself as the OAuth test user) likely avoids the review/verification lead time that "Production" mode with sensitive scopes would require, but this affects how quickly F-01 can actually be exercised. Owner: user. Block: F-01 (confirm before implementing, doesn't block starting the work).
+
+## Pre-Release Checklist
+
+Concrete TODOs before a public App Store / Play Store build — don't block local/dev builds, but block a public release.
+
+- **Remove the debug sign-in bypass** — `DEBUG_FORCE_SIGNED_IN` in `src/hooks/use-google-calendar-session.ts:25` forces the signed-in UI for simulator testing; must be deleted (or hard-`false`) before any release build.
+- **Complete Google OAuth consent screen verification** — `calendar.events` is a Google "sensitive scope," so the public build needs a verified OAuth consent screen in Google Cloud Console (privacy policy URL + app branding) before public App Store/Play distribution; without it, Google shows users an "unverified app" warning. Related to the open question below on Testing vs. Production consent mode.
 
 ## Parked
 
