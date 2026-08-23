@@ -37,6 +37,7 @@ const EXTRACT_EVENT_TOOL = {
 export type DeleteSearchQuery = {
   searchQuery: string;
   dateHint?: string;
+  timeHint?: string;
 };
 
 const EXTRACT_DELETE_TARGET_TOOL = {
@@ -48,12 +49,17 @@ const EXTRACT_DELETE_TARGET_TOOL = {
       searchQuery: {
         type: 'string',
         description:
-          'Keywords identifying the event, such as its title or topic. Do not include date or time words (e.g. "tomorrow", "11:30 pm", "next Tuesday") — Google Calendar searches event titles, and those words rarely appear there.',
+          'Keywords identifying the event by its actual title or topic — words that would literally appear in the calendar event\'s title. Never include date or time words (e.g. "tomorrow", "11:30 pm", "next Tuesday") or a generic word like "event"/"meeting"/"appointment" used alone. If the transcript gives no real title words — e.g. it only says a generic word plus a date/time, like "delete the event at 11:30 pm today" — return an empty string.',
       },
       dateHint: {
         type: 'string',
         description:
           'The specific day the event is on, as an ISO 8601 date (YYYY-MM-DD), only if the user mentioned a date or day (e.g. "tomorrow", "next Tuesday"). Omit if no date was mentioned.',
+      },
+      timeHint: {
+        type: 'string',
+        description:
+          'The specific time of day the event starts, as 24-hour HH:mm (e.g. "23:30"), only if the user mentioned a specific time (e.g. "11:30 pm", "at 3pm"). Omit if no time was mentioned.',
       },
     },
     required: ['searchQuery'],
@@ -100,13 +106,14 @@ export async function parseDeleteTargetFromTranscript(transcript: string): Promi
 
   const input = toolUseBlock.input as Partial<DeleteSearchQuery>;
 
-  if (!input.searchQuery) {
+  if (input.searchQuery === undefined) {
     throw new ParseError('Claude tool_use input is missing required fields');
   }
 
   return {
     searchQuery: input.searchQuery,
     ...(input.dateHint !== undefined ? { dateHint: input.dateHint } : {}),
+    ...(input.timeHint !== undefined ? { timeHint: input.timeHint } : {}),
   };
 }
 

@@ -122,12 +122,14 @@ export async function searchEvents(
   timeMax: string,
 ): Promise<CalendarEvent[]> {
   const params = new URLSearchParams({
-    q: query,
     timeMin,
     timeMax,
     singleEvents: 'true',
     orderBy: 'startTime',
   });
+  if (query) {
+    params.set('q', query);
+  }
 
   const response = await fetch(
     `https://www.googleapis.com/calendar/v3/calendars/primary/events?${params.toString()}`,

@@ -55,6 +55,20 @@ describe('findEventToDelete', () => {
     );
   });
 
+  it('resolves a narrow window around dateHint + timeHint when both are present', async () => {
+    mockSearchEvents.mockResolvedValue([]);
+
+    await findEventToDelete({ searchQuery: '', dateHint: '2026-08-23', timeHint: '23:30' });
+
+    const target = new Date(2026, 7, 23, 23, 30, 0, 0);
+    expect(mockSearchEvents).toHaveBeenCalledWith(
+      'token-123',
+      '',
+      new Date(target.getTime() - 30 * 60 * 1000).toISOString(),
+      new Date(target.getTime() + 30 * 60 * 1000).toISOString(),
+    );
+  });
+
   it('resolves a 30-day-forward window from now when dateHint is absent', async () => {
     mockSearchEvents.mockResolvedValue([]);
 

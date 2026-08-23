@@ -163,6 +163,25 @@ describe('parseDeleteTargetFromTranscript', () => {
     expect(result).toEqual({ searchQuery: 'team sync' });
   });
 
+  it('maps a tool_use response with a timeHint to a DeleteSearchQuery', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        content: [
+          {
+            type: 'tool_use',
+            name: 'extract_delete_target',
+            input: { searchQuery: '', dateHint: '2026-08-23', timeHint: '23:30' },
+          },
+        ],
+      }),
+    });
+
+    const result = await parseDeleteTargetFromTranscript('Delete event 11:30 pm today');
+
+    expect(result).toEqual({ searchQuery: '', dateHint: '2026-08-23', timeHint: '23:30' });
+  });
+
   it('throws ParseError when no tool_use block is present', async () => {
     (global.fetch as jest.Mock).mockResolvedValue({
       ok: true,
