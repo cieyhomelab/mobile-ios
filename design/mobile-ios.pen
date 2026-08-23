@@ -1,0 +1,1275 @@
+{
+  "version": "2.17",
+  "children": [
+    {
+      "type": "frame",
+      "id": "bi8Au",
+      "x": 0,
+      "y": 0,
+      "name": "Frame",
+      "clip": true,
+      "width": 800,
+      "height": 600,
+      "fill": "#FFFFFF",
+      "layout": "none"
+    },
+    {
+      "type": "frame",
+      "id": "WE640",
+      "x": 0,
+      "y": 0,
+      "name": "Status Bar",
+      "reusable": true,
+      "width": 390,
+      "height": 62,
+      "fill": "$bg",
+      "padding": [
+        0,
+        20
+      ],
+      "justifyContent": "space_between",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "text",
+          "id": "lDbra",
+          "name": "Time",
+          "fill": "$text-primary",
+          "content": "9:41",
+          "fontFamily": "$font-body",
+          "fontSize": 15,
+          "fontWeight": "600"
+        },
+        {
+          "type": "frame",
+          "id": "touOc",
+          "name": "Status Icons",
+          "gap": 6,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon",
+              "id": "u5LSwu",
+              "name": "Wifi",
+              "width": 16,
+              "height": 16,
+              "icon": "wifi",
+              "library": "lucide",
+              "fill": "$text-primary"
+            },
+            {
+              "type": "icon",
+              "id": "YbQb0",
+              "name": "Battery",
+              "width": 20,
+              "height": 20,
+              "icon": "battery-full",
+              "library": "lucide",
+              "fill": "$text-primary"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "loRaz",
+      "x": 450,
+      "y": 0,
+      "name": "Primary Button",
+      "reusable": true,
+      "fill": "$accent",
+      "cornerRadius": 16,
+      "gap": 8,
+      "padding": [
+        16,
+        24
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "text",
+          "id": "u1fGr",
+          "name": "Label",
+          "fill": "$accent-text",
+          "content": "Primary Action",
+          "fontFamily": "$font-body",
+          "fontSize": 16,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "eJZF1",
+      "x": 700,
+      "y": 0,
+      "name": "Secondary Button",
+      "reusable": true,
+      "fill": "$surface-alt",
+      "cornerRadius": 16,
+      "layout": "vertical",
+      "gap": 6,
+      "padding": [
+        14,
+        16
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon",
+          "id": "Uo1Hk",
+          "name": "Icon",
+          "width": 20,
+          "height": 20,
+          "icon": "calendar",
+          "library": "lucide",
+          "fill": "$text-primary"
+        },
+        {
+          "type": "text",
+          "id": "inQrR",
+          "name": "Label",
+          "fill": "$text-primary",
+          "content": "Secondary Action",
+          "fontFamily": "$font-body",
+          "fontSize": 13,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "ccr1Y",
+      "x": 950,
+      "y": 0,
+      "name": "Danger Button",
+      "reusable": true,
+      "fill": "$danger",
+      "cornerRadius": 16,
+      "gap": 8,
+      "padding": [
+        16,
+        24
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "text",
+          "id": "ZEq1y",
+          "name": "Label",
+          "fill": "#FFFFFF",
+          "content": "Delete",
+          "fontFamily": "$font-body",
+          "fontSize": 16,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "sdiLo",
+      "x": 1150,
+      "y": 0,
+      "name": "Cancel Button",
+      "reusable": true,
+      "fill": "$surface-alt",
+      "cornerRadius": 16,
+      "gap": 8,
+      "padding": [
+        16,
+        24
+      ],
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "text",
+          "id": "NIsxQ",
+          "name": "Label",
+          "fill": "$text-primary",
+          "content": "Cancel",
+          "fontFamily": "$font-body",
+          "fontSize": 16,
+          "fontWeight": "600"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "oro5Q",
+      "x": 1350,
+      "y": 0,
+      "name": "Mic Button",
+      "reusable": true,
+      "width": 208,
+      "height": 208,
+      "fill": "$accent",
+      "cornerRadius": 104,
+      "effect": {
+        "type": "shadow",
+        "shadowType": "outer",
+        "color": "#FF9F4555",
+        "offset": {
+          "x": 0,
+          "y": 14
+        },
+        "blur": 36
+      },
+      "justifyContent": "center",
+      "alignItems": "center",
+      "children": [
+        {
+          "type": "icon",
+          "id": "B8u90q",
+          "name": "Mic Icon",
+          "width": 72,
+          "height": 72,
+          "icon": "mic",
+          "library": "lucide",
+          "fill": "$accent-text"
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "bKdZk",
+      "x": 1650,
+      "y": 0,
+      "name": "Event Card",
+      "reusable": true,
+      "width": 342,
+      "fill": "$surface",
+      "cornerRadius": 20,
+      "layout": "vertical",
+      "gap": 16,
+      "padding": 20,
+      "children": [
+        {
+          "type": "frame",
+          "id": "j6rtO",
+          "name": "Title Row",
+          "width": "fill_container",
+          "gap": 12,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon",
+              "id": "Xf7x1",
+              "name": "Calendar Icon",
+              "width": 22,
+              "height": 22,
+              "icon": "calendar",
+              "library": "lucide",
+              "fill": "$accent"
+            },
+            {
+              "type": "text",
+              "id": "j7FLu",
+              "name": "Title",
+              "fill": "$text-primary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Event Title",
+              "fontFamily": "$font-body",
+              "fontSize": 19,
+              "fontWeight": "700"
+            }
+          ]
+        },
+        {
+          "type": "frame",
+          "id": "HSaVg",
+          "name": "Time Row",
+          "width": "fill_container",
+          "gap": 12,
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "icon",
+              "id": "N2yNSh",
+              "name": "Clock Icon",
+              "width": 20,
+              "height": 20,
+              "icon": "timer",
+              "library": "lucide",
+              "fill": "$text-secondary"
+            },
+            {
+              "type": "text",
+              "id": "HT1tC",
+              "name": "Time",
+              "fill": "$text-secondary",
+              "textGrowth": "fixed-width",
+              "width": "fill_container",
+              "content": "Event time",
+              "fontFamily": "$font-body",
+              "fontSize": 15,
+              "fontWeight": "normal"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "EuH1q",
+      "x": 1650,
+      "y": 199,
+      "name": "1 - Onboarding",
+      "clip": true,
+      "width": 390,
+      "fill": "$bg",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "o5a20W",
+          "type": "ref",
+          "ref": "WE640",
+          "name": "Status Bar",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "s4vEl",
+          "name": "Content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 32,
+          "padding": [
+            36,
+            24,
+            40,
+            24
+          ],
+          "alignItems": "center",
+          "children": [
+            {
+              "type": "frame",
+              "id": "ImfkL",
+              "name": "Icon Badge",
+              "width": 88,
+              "height": 88,
+              "fill": "$surface-alt",
+              "cornerRadius": 44,
+              "justifyContent": "center",
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "j8XIV",
+                  "name": "Calendar Icon",
+                  "width": 40,
+                  "height": 40,
+                  "icon": "calendar-heart",
+                  "library": "lucide",
+                  "fill": "$accent"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "N3TvFj",
+              "name": "Text Group",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "lSWXH",
+                  "name": "Title",
+                  "fill": "$text-primary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Your calendar, hands-free",
+                  "lineHeight": 1.15,
+                  "textAlign": "center",
+                  "fontFamily": "$font-body",
+                  "fontSize": 28,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "m4iiYy",
+                  "name": "Body",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "To create, check, and delete events by voice while you drive, this app needs access to your Google Calendar. It only reads and writes events — nothing else is accessed or shared.",
+                  "lineHeight": 1.5,
+                  "textAlign": "center",
+                  "fontFamily": "$font-body",
+                  "fontSize": 15,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "aolpo",
+              "name": "CTA Group",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 12,
+              "children": [
+                {
+                  "id": "dCOLJ",
+                  "type": "ref",
+                  "ref": "loRaz",
+                  "name": "Connect Button",
+                  "width": "fill_container",
+                  "descendants": {
+                    "u1fGr": {
+                      "content": "Connect Google Calendar"
+                    }
+                  }
+                },
+                {
+                  "type": "text",
+                  "id": "y12Pr",
+                  "name": "Caption",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "You'll grant calendar access now. Microphone access is requested the first time you record.",
+                  "lineHeight": 1.4,
+                  "textAlign": "center",
+                  "fontFamily": "$font-body",
+                  "fontSize": 12,
+                  "fontWeight": "normal"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "BwmI0",
+      "x": 2140,
+      "y": 199,
+      "name": "2 - Home Idle",
+      "clip": true,
+      "width": 390,
+      "fill": "$bg",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "aVrFj",
+          "type": "ref",
+          "ref": "WE640",
+          "name": "Status Bar",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "zrKpL",
+          "name": "Content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 40,
+          "padding": [
+            28,
+            24,
+            40,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "gPrCW",
+              "name": "Header Row",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "QEP98",
+                  "name": "Header Text",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "tYZii",
+                      "name": "Greeting",
+                      "fill": "$text-secondary",
+                      "content": "Good afternoon",
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "ckTmw",
+                      "name": "Prompt",
+                      "fill": "$text-primary",
+                      "content": "What would you like to do?",
+                      "fontFamily": "$font-body",
+                      "fontSize": 21,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "hmLDE",
+                  "name": "Connected Pill",
+                  "fill": "$surface-alt",
+                  "cornerRadius": 999,
+                  "gap": 5,
+                  "padding": [
+                    6,
+                    10
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "aRTeP",
+                      "name": "Check Icon",
+                      "width": 13,
+                      "height": 13,
+                      "icon": "circle-check",
+                      "library": "lucide",
+                      "fill": "$accent"
+                    },
+                    {
+                      "type": "text",
+                      "id": "n4OUI",
+                      "name": "Status",
+                      "fill": "$text-secondary",
+                      "content": "Connected",
+                      "fontFamily": "$font-body",
+                      "fontSize": 11,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "sB53F",
+              "name": "Mic Cluster",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 16,
+              "alignItems": "center",
+              "children": [
+                {
+                  "id": "yVB59",
+                  "type": "ref",
+                  "ref": "oro5Q",
+                  "name": "Mic Button"
+                },
+                {
+                  "type": "frame",
+                  "id": "dZEhQ",
+                  "name": "Mic Label Group",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "h2kRV",
+                      "name": "Mic Label",
+                      "fill": "$text-primary",
+                      "content": "Hold to create an event",
+                      "fontFamily": "$font-body",
+                      "fontSize": 16,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "XU4Ko",
+                      "name": "Mic Sublabel",
+                      "fill": "$text-secondary",
+                      "content": "Press and hold, release to send",
+                      "fontFamily": "$font-body",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "CRmzZ",
+              "name": "Actions Row",
+              "width": "fill_container",
+              "gap": 12,
+              "children": [
+                {
+                  "id": "lmAwO",
+                  "type": "ref",
+                  "ref": "eJZF1",
+                  "name": "Today Button",
+                  "width": "fill_container",
+                  "descendants": {
+                    "Uo1Hk": {
+                      "icon": "calendar-search"
+                    },
+                    "inQrR": {
+                      "content": "What's on today?"
+                    }
+                  }
+                },
+                {
+                  "id": "hzmxP",
+                  "type": "ref",
+                  "ref": "eJZF1",
+                  "name": "Delete Button",
+                  "width": "fill_container",
+                  "descendants": {
+                    "Uo1Hk": {
+                      "icon": "trash-2"
+                    },
+                    "inQrR": {
+                      "content": "Delete an event"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "WetOL",
+      "x": 2630,
+      "y": 199,
+      "name": "3 - Home Listening",
+      "clip": true,
+      "width": 390,
+      "fill": "$bg",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "hstmE",
+          "type": "ref",
+          "ref": "WE640",
+          "name": "Status Bar",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "t19Jn",
+          "name": "Content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 40,
+          "padding": [
+            28,
+            24,
+            40,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "GggFN",
+              "name": "Header Row",
+              "width": "fill_container",
+              "justifyContent": "space_between",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "faFJM",
+                  "name": "Header Text",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "h4XcEZ",
+                      "name": "Greeting",
+                      "fill": "$text-secondary",
+                      "content": "Good afternoon",
+                      "fontFamily": "$font-body",
+                      "fontSize": 14,
+                      "fontWeight": "normal"
+                    },
+                    {
+                      "type": "text",
+                      "id": "XOKg0",
+                      "name": "Prompt",
+                      "fill": "$text-primary",
+                      "content": "What would you like to do?",
+                      "fontFamily": "$font-body",
+                      "fontSize": 21,
+                      "fontWeight": "700"
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "auTjs",
+                  "name": "Connected Pill",
+                  "fill": "$surface-alt",
+                  "cornerRadius": 999,
+                  "gap": 5,
+                  "padding": [
+                    6,
+                    10
+                  ],
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "icon",
+                      "id": "Pypjm",
+                      "name": "Check Icon",
+                      "width": 13,
+                      "height": 13,
+                      "icon": "circle-check",
+                      "library": "lucide",
+                      "fill": "$accent"
+                    },
+                    {
+                      "type": "text",
+                      "id": "nKInl",
+                      "name": "Status",
+                      "fill": "$text-secondary",
+                      "content": "Connected",
+                      "fontFamily": "$font-body",
+                      "fontSize": 11,
+                      "fontWeight": "600"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "lAVZE",
+              "name": "Mic Cluster",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 20,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "frame",
+                  "id": "nB1tb",
+                  "name": "Rings",
+                  "width": 260,
+                  "height": 260,
+                  "layout": "none",
+                  "children": [
+                    {
+                      "type": "ellipse",
+                      "id": "OF6w3",
+                      "x": 0,
+                      "y": 0,
+                      "name": "Ring Outer",
+                      "width": 260,
+                      "height": 260,
+                      "stroke": "#FF9F4540",
+                      "strokeWidth": 2
+                    },
+                    {
+                      "type": "ellipse",
+                      "id": "V6jFGZ",
+                      "x": 14,
+                      "y": 14,
+                      "name": "Ring Mid",
+                      "fill": "#FF9F4522",
+                      "width": 232,
+                      "height": 232
+                    },
+                    {
+                      "id": "E3cX5",
+                      "type": "ref",
+                      "ref": "oro5Q",
+                      "name": "Mic Button",
+                      "x": 26,
+                      "y": 26
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "V2jiux",
+                  "name": "Waveform",
+                  "gap": 4,
+                  "justifyContent": "center",
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 2,
+                      "id": "Rlzsw",
+                      "name": "Bar",
+                      "fill": "$accent",
+                      "width": 4,
+                      "height": 10
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 2,
+                      "id": "wyOJf",
+                      "name": "Bar",
+                      "fill": "$accent",
+                      "width": 4,
+                      "height": 18
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 2,
+                      "id": "MuQxJ",
+                      "name": "Bar",
+                      "fill": "$accent",
+                      "width": 4,
+                      "height": 30
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 2,
+                      "id": "Thhan",
+                      "name": "Bar",
+                      "fill": "$accent",
+                      "width": 4,
+                      "height": 20
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 2,
+                      "id": "JzHjN",
+                      "name": "Bar",
+                      "fill": "$accent",
+                      "width": 4,
+                      "height": 34
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 2,
+                      "id": "Csz0r",
+                      "name": "Bar",
+                      "fill": "$accent",
+                      "width": 4,
+                      "height": 16
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 2,
+                      "id": "T7rGnI",
+                      "name": "Bar",
+                      "fill": "$accent",
+                      "width": 4,
+                      "height": 22
+                    },
+                    {
+                      "type": "rectangle",
+                      "cornerRadius": 2,
+                      "id": "QgHvY",
+                      "name": "Bar",
+                      "fill": "$accent",
+                      "width": 4,
+                      "height": 12
+                    }
+                  ]
+                },
+                {
+                  "type": "frame",
+                  "id": "HJm1c",
+                  "name": "Mic Label Group",
+                  "layout": "vertical",
+                  "gap": 4,
+                  "alignItems": "center",
+                  "children": [
+                    {
+                      "type": "text",
+                      "id": "uXAjI",
+                      "name": "Mic Label",
+                      "fill": "$text-primary",
+                      "content": "Listening… release to finish",
+                      "fontFamily": "$font-body",
+                      "fontSize": 16,
+                      "fontWeight": "600"
+                    },
+                    {
+                      "type": "text",
+                      "id": "IzxPI",
+                      "name": "Mic Sublabel",
+                      "fill": "$text-secondary",
+                      "content": "Speak now, then let go",
+                      "fontFamily": "$font-body",
+                      "fontSize": 13,
+                      "fontWeight": "normal"
+                    }
+                  ]
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "V62ZC",
+              "name": "Actions Row",
+              "opacity": 0.35,
+              "width": "fill_container",
+              "gap": 12,
+              "children": [
+                {
+                  "id": "x9FyNG",
+                  "type": "ref",
+                  "ref": "eJZF1",
+                  "name": "Today Button",
+                  "width": "fill_container",
+                  "descendants": {
+                    "Uo1Hk": {
+                      "icon": "calendar-search"
+                    },
+                    "inQrR": {
+                      "content": "What's on today?"
+                    }
+                  }
+                },
+                {
+                  "id": "GEteO",
+                  "type": "ref",
+                  "ref": "eJZF1",
+                  "name": "Delete Button",
+                  "width": "fill_container",
+                  "descendants": {
+                    "Uo1Hk": {
+                      "icon": "trash-2"
+                    },
+                    "inQrR": {
+                      "content": "Delete an event"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "uOrch",
+      "x": 3120,
+      "y": 199,
+      "name": "4 - Confirm Create",
+      "clip": true,
+      "width": 390,
+      "fill": "$bg",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "gXXqp",
+          "type": "ref",
+          "ref": "WE640",
+          "name": "Status Bar",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "DgMrr",
+          "name": "Content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 28,
+          "padding": [
+            28,
+            24,
+            40,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "WuLGe",
+              "name": "Header Text",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "LhEqA",
+                  "name": "Title",
+                  "fill": "$text-primary",
+                  "content": "Did I get this right?",
+                  "fontFamily": "$font-body",
+                  "fontSize": 22,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "N20BXr",
+                  "name": "Subtitle",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "Say yes to confirm, or use the buttons below.",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "id": "aWQnO",
+              "type": "ref",
+              "ref": "bKdZk",
+              "name": "Event Card",
+              "width": "fill_container",
+              "descendants": {
+                "j7FLu": {
+                  "content": "Dentist appointment"
+                },
+                "HT1tC": {
+                  "content": "Tue, Aug 25 · 2:00 PM · 60 min"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "C73Cof",
+              "name": "Button Row",
+              "width": "fill_container",
+              "gap": 12,
+              "children": [
+                {
+                  "id": "pFvmN",
+                  "type": "ref",
+                  "ref": "sdiLo",
+                  "name": "Cancel",
+                  "width": "fill_container"
+                },
+                {
+                  "id": "o91Fo",
+                  "type": "ref",
+                  "ref": "loRaz",
+                  "name": "Confirm",
+                  "width": "fill_container",
+                  "descendants": {
+                    "u1fGr": {
+                      "content": "Confirm"
+                    }
+                  }
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "type": "frame",
+      "id": "iebjX",
+      "x": 3610,
+      "y": 199,
+      "name": "5 - Confirm Delete",
+      "clip": true,
+      "width": 390,
+      "fill": "$bg",
+      "layout": "vertical",
+      "children": [
+        {
+          "id": "ylb0a",
+          "type": "ref",
+          "ref": "WE640",
+          "name": "Status Bar",
+          "width": "fill_container"
+        },
+        {
+          "type": "frame",
+          "id": "jeBmW",
+          "name": "Content",
+          "width": "fill_container",
+          "layout": "vertical",
+          "gap": 28,
+          "padding": [
+            28,
+            24,
+            40,
+            24
+          ],
+          "children": [
+            {
+              "type": "frame",
+              "id": "dKOcc",
+              "name": "Header Text",
+              "width": "fill_container",
+              "layout": "vertical",
+              "gap": 6,
+              "children": [
+                {
+                  "type": "text",
+                  "id": "UzsNh",
+                  "name": "Title",
+                  "fill": "$text-primary",
+                  "content": "Delete this event?",
+                  "fontFamily": "$font-body",
+                  "fontSize": 22,
+                  "fontWeight": "700"
+                },
+                {
+                  "type": "text",
+                  "id": "dD1oR",
+                  "name": "Subtitle",
+                  "fill": "$text-secondary",
+                  "textGrowth": "fixed-width",
+                  "width": "fill_container",
+                  "content": "This can't be undone. Say yes to confirm, or use the buttons below.",
+                  "fontFamily": "$font-body",
+                  "fontSize": 14,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "id": "MsNdu",
+              "type": "ref",
+              "ref": "bKdZk",
+              "name": "Event Card",
+              "width": "fill_container",
+              "descendants": {
+                "Xf7x1": {
+                  "icon": "trash-2",
+                  "fill": "$danger"
+                },
+                "j7FLu": {
+                  "content": "Team sync"
+                },
+                "HT1tC": {
+                  "content": "Wed, Aug 26 · 10:00 AM · 30 min"
+                }
+              }
+            },
+            {
+              "type": "frame",
+              "id": "wthJF",
+              "name": "Match Hint",
+              "gap": 8,
+              "alignItems": "center",
+              "children": [
+                {
+                  "type": "icon",
+                  "id": "wN0y6",
+                  "name": "Info Icon",
+                  "width": 15,
+                  "height": 15,
+                  "icon": "info",
+                  "library": "lucide",
+                  "fill": "$text-secondary"
+                },
+                {
+                  "type": "text",
+                  "id": "gCONT",
+                  "name": "Hint Text",
+                  "fill": "$text-secondary",
+                  "content": "1 of 2 matching events — is this the one?",
+                  "fontFamily": "$font-body",
+                  "fontSize": 13,
+                  "fontWeight": "normal"
+                }
+              ]
+            },
+            {
+              "type": "frame",
+              "id": "ykGOQ",
+              "name": "Button Row",
+              "width": "fill_container",
+              "gap": 12,
+              "children": [
+                {
+                  "id": "bw05R",
+                  "type": "ref",
+                  "ref": "sdiLo",
+                  "name": "Cancel",
+                  "width": "fill_container"
+                },
+                {
+                  "id": "Pm7Ws",
+                  "type": "ref",
+                  "ref": "ccr1Y",
+                  "name": "Delete",
+                  "width": "fill_container"
+                }
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variables": {
+    "bg": {
+      "type": "color",
+      "value": "#0B0D12"
+    },
+    "surface": {
+      "type": "color",
+      "value": "#161922"
+    },
+    "surface-alt": {
+      "type": "color",
+      "value": "#1E2230"
+    },
+    "hairline": {
+      "type": "color",
+      "value": "#262B38"
+    },
+    "text-primary": {
+      "type": "color",
+      "value": "#F4F5F7"
+    },
+    "text-secondary": {
+      "type": "color",
+      "value": "#878C99"
+    },
+    "accent": {
+      "type": "color",
+      "value": "#FF9F45"
+    },
+    "accent-text": {
+      "type": "color",
+      "value": "#241505"
+    },
+    "danger": {
+      "type": "color",
+      "value": "#E5584D"
+    },
+    "font-body": {
+      "type": "string",
+      "value": "Inter"
+    },
+    "spacing-half": {
+      "type": "number",
+      "value": 2
+    },
+    "spacing-one": {
+      "type": "number",
+      "value": 4
+    },
+    "spacing-two": {
+      "type": "number",
+      "value": 8
+    },
+    "spacing-three": {
+      "type": "number",
+      "value": 16
+    },
+    "spacing-four": {
+      "type": "number",
+      "value": 24
+    },
+    "spacing-five": {
+      "type": "number",
+      "value": 32
+    }
+  },
+  "fileToken": "998b62b0-f4a2-4365-95fa-7b01f74aa516"
+}
