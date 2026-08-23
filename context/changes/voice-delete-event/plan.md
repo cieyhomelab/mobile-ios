@@ -281,19 +281,19 @@ None — no data model or persisted state changes; this only adds new client-sid
 
 #### Automated
 
-- [x] 2.1 Unit tests pass: `npm test -- event-parser.test.ts`
-- [x] 2.2 Full test suite passes: `npm test`
-- [x] 2.3 Type checking passes: `npx tsc --noEmit`
-- [x] 2.4 Linting passes: `npm run lint`
+- [x] 2.1 Unit tests pass: `npm test -- event-parser.test.ts` — 1fae403
+- [x] 2.2 Full test suite passes: `npm test` — 1fae403
+- [x] 2.3 Type checking passes: `npx tsc --noEmit` — 1fae403
+- [x] 2.4 Linting passes: `npm run lint` — 1fae403
 
 ### Phase 3: Delete business logic
 
 #### Automated
 
-- [ ] 3.1 Unit tests pass: `npm test -- delete-event-tool.test.ts`
-- [ ] 3.2 Full test suite passes: `npm test`
-- [ ] 3.3 Type checking passes: `npx tsc --noEmit`
-- [ ] 3.4 Linting passes: `npm run lint`
+- [x] 3.1 Unit tests pass: `npm test -- delete-event-tool.test.ts`
+- [x] 3.2 Full test suite passes: `npm test`
+- [x] 3.3 Type checking passes: `npx tsc --noEmit`
+- [x] 3.4 Linting passes: `npm run lint`
 
 ### Phase 4: UI integration
 
