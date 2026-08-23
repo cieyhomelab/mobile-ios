@@ -3,6 +3,7 @@ import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Pressable, StyleSheet } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { CalendarAccessNote } from '@/components/calendar-access-note';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
@@ -198,6 +199,7 @@ function VoiceScreen() {
 
         {session.state === 'signedOut' && (
           <>
+            <CalendarAccessNote />
             <Pressable
               disabled={session.isConnecting}
               style={({ pressed }) => pressed && styles.pressed}
