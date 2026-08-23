@@ -47,7 +47,8 @@ const EXTRACT_DELETE_TARGET_TOOL = {
     properties: {
       searchQuery: {
         type: 'string',
-        description: 'Keywords identifying the event, such as its title or topic.',
+        description:
+          'Keywords identifying the event, such as its title or topic. Do not include date or time words (e.g. "tomorrow", "11:30 pm", "next Tuesday") — Google Calendar searches event titles, and those words rarely appear there.',
       },
       dateHint: {
         type: 'string',
