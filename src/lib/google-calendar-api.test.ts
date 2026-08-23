@@ -1,4 +1,11 @@
-import { CalendarApiError, createEvent, findConflictingEvents, listTodayEvents } from './google-calendar-api';
+import {
+  CalendarApiError,
+  createEvent,
+  deleteEvent,
+  findConflictingEvents,
+  listTodayEvents,
+  searchEvents,
+} from './google-calendar-api';
 
 describe('createEvent', () => {
   beforeEach(() => {
@@ -105,6 +112,82 @@ describe('findConflictingEvents', () => {
     await expect(
       findConflictingEvents('token', '2026-08-23T15:00:00Z', '2026-08-23T16:00:00Z'),
     ).rejects.toThrow(CalendarApiError);
+  });
+});
+
+describe('searchEvents', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn();
+  });
+
+  it('sends q, timeMin, timeMax, singleEvents, and orderBy', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: async () => ({}) });
+
+    await searchEvents('token', 'dentist', '2026-08-23T00:00:00.000Z', '2026-09-22T00:00:00.000Z');
+
+    const url = (global.fetch as jest.Mock).mock.calls[0][0] as string;
+    const params = new URLSearchParams(url.split('?')[1]);
+
+    expect(params.get('q')).toBe('dentist');
+    expect(params.get('timeMin')).toBe('2026-08-23T00:00:00.000Z');
+    expect(params.get('timeMax')).toBe('2026-09-22T00:00:00.000Z');
+    expect(params.get('singleEvents')).toBe('true');
+    expect(params.get('orderBy')).toBe('startTime');
+  });
+
+  it('returns the mapped events', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({
+      ok: true,
+      json: async () => ({
+        items: [{ id: 'e1', summary: 'Dentist checkup', start: { dateTime: '2026-08-24T09:00:00Z' } }],
+      }),
+    });
+
+    const result = await searchEvents('token', 'dentist', '2026-08-23T00:00:00.000Z', '2026-09-22T00:00:00.000Z');
+
+    expect(result).toEqual([{ id: 'e1', summary: 'Dentist checkup', start: '2026-08-24T09:00:00Z' }]);
+  });
+
+  it('returns an empty array when there are no matches', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({ ok: true, json: async () => ({}) });
+
+    const result = await searchEvents('token', 'nothing', '2026-08-23T00:00:00.000Z', '2026-09-22T00:00:00.000Z');
+
+    expect(result).toEqual([]);
+  });
+
+  it('throws CalendarApiError on a non-2xx response', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({ ok: false, status: 500 });
+
+    await expect(
+      searchEvents('token', 'dentist', '2026-08-23T00:00:00.000Z', '2026-09-22T00:00:00.000Z'),
+    ).rejects.toThrow(CalendarApiError);
+  });
+});
+
+describe('deleteEvent', () => {
+  beforeEach(() => {
+    global.fetch = jest.fn();
+  });
+
+  it('sends a DELETE request to the event URL with the auth header', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({ ok: true });
+
+    await deleteEvent('token-123', 'event-1');
+
+    expect(global.fetch).toHaveBeenCalledWith(
+      'https://www.googleapis.com/calendar/v3/calendars/primary/events/event-1',
+      expect.objectContaining({
+        method: 'DELETE',
+        headers: expect.objectContaining({ Authorization: 'Bearer token-123' }),
+      }),
+    );
+  });
+
+  it('throws CalendarApiError on a non-2xx response', async () => {
+    (global.fetch as jest.Mock).mockResolvedValue({ ok: false, status: 404 });
+
+    await expect(deleteEvent('token', 'event-1')).rejects.toThrow(CalendarApiError);
   });
 });
 
