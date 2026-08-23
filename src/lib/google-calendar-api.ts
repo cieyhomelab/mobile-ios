@@ -115,6 +115,49 @@ export async function listTodayEvents(accessToken: string): Promise<CalendarEven
   }));
 }
 
+export async function searchEvents(
+  accessToken: string,
+  query: string,
+  timeMin: string,
+  timeMax: string,
+): Promise<CalendarEvent[]> {
+  const params = new URLSearchParams({
+    q: query,
+    timeMin,
+    timeMax,
+    singleEvents: 'true',
+    orderBy: 'startTime',
+  });
+
+  const response = await fetch(
+    `https://www.googleapis.com/calendar/v3/calendars/primary/events?${params.toString()}`,
+    { headers: { Authorization: `Bearer ${accessToken}` } },
+  );
+
+  if (!response.ok) {
+    throw new CalendarApiError(response.status);
+  }
+
+  const data: CalendarEventsListResponse = await response.json();
+
+  return (data.items ?? []).map((item) => ({
+    id: item.id,
+    summary: item.summary ?? '(no title)',
+    start: item.start?.dateTime ?? item.start?.date ?? '',
+  }));
+}
+
+export async function deleteEvent(accessToken: string, eventId: string): Promise<void> {
+  const response = await fetch(
+    `https://www.googleapis.com/calendar/v3/calendars/primary/events/${eventId}`,
+    { method: 'DELETE', headers: { Authorization: `Bearer ${accessToken}` } },
+  );
+
+  if (!response.ok) {
+    throw new CalendarApiError(response.status);
+  }
+}
+
 export async function createEvent(accessToken: string, event: DraftEvent): Promise<CalendarEvent> {
   const durationMinutes = event.durationMinutes ?? 60;
   const start = new Date(event.startDateTime);

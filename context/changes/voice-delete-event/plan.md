@@ -272,10 +272,10 @@ None — no data model or persisted state changes; this only adds new client-sid
 
 #### Automated
 
-- [ ] 1.1 Unit tests pass: `npm test -- google-calendar-api.test.ts`
-- [ ] 1.2 Full test suite passes: `npm test`
-- [ ] 1.3 Type checking passes: `npx tsc --noEmit`
-- [ ] 1.4 Linting passes: `npm run lint`
+- [x] 1.1 Unit tests pass: `npm test -- google-calendar-api.test.ts`
+- [x] 1.2 Full test suite passes: `npm test`
+- [x] 1.3 Type checking passes: `npx tsc --noEmit`
+- [x] 1.4 Linting passes: `npm run lint`
 
 ### Phase 2: Delete-target voice parsing
 
