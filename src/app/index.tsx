@@ -188,13 +188,15 @@ function VoiceScreen() {
     setPhase('idle');
   }, [player]);
 
-  const handleLogout = useCallback(async () => {
+  const handleLogout = useCallback(() => {
     setPhase('idle');
     setDraft(null);
     setDeleteTarget(null);
     setPipelineError(null);
     setResultMessage(null);
-    await session.forceSignOut();
+    void (async () => {
+      await session.forceSignOut();
+    })();
   }, [session]);
 
   return (
@@ -220,7 +222,7 @@ function VoiceScreen() {
             onStopSpeaking={handleStopSpeaking}
             onDeletePressIn={handleDeletePressIn}
             onDeletePressOut={handleDeletePressOut}
-            onLogout={() => void handleLogout()}
+            onLogout={handleLogout}
           />
         )}
 
