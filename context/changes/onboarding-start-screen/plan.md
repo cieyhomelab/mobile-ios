@@ -120,13 +120,13 @@ Not applicable — no data model or persisted state involved.
 
 #### Automated
 
-- [x] 1.1 Type checking passes: `npx tsc --noEmit`
-- [x] 1.2 Linting passes: `npm run lint`
-- [x] 1.3 Existing unit tests still pass: `npm test`
+- [x] 1.1 Type checking passes: `npx tsc --noEmit` — a39b525
+- [x] 1.2 Linting passes: `npm run lint` — a39b525
+- [x] 1.3 Existing unit tests still pass: `npm test` — a39b525
 
 #### Manual
 
-- [x] 1.4 Note renders above the Connect button when signed out
-- [x] 1.5 Note is legible and correctly themed in light and dark mode
-- [x] 1.6 Signed-in flow unaffected; note disappears once signed in
-- [x] 1.7 No layout shift/overlap with existing button/error text
+- [x] 1.4 Note renders above the Connect button when signed out — a39b525
+- [x] 1.5 Note is legible and correctly themed in light and dark mode — a39b525
+- [x] 1.6 Signed-in flow unaffected; note disappears once signed in — a39b525
+- [x] 1.7 No layout shift/overlap with existing button/error text — a39b525

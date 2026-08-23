@@ -1,7 +1,7 @@
 ---
 change_id: onboarding-start-screen
 title: Onboarding start screen
-status: implementing
+status: implemented
 created: 2026-08-23
 updated: 2026-08-23
 archived_at: null
