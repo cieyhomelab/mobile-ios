@@ -229,14 +229,14 @@ Not applicable — no data model or persisted schema changes.
 
 #### Automated
 
-- [x] 1.1 Lint passes: `npm run lint`
-- [x] 1.2 Type checking passes: `npx tsc --noEmit`
-- [x] 1.3 Existing test suite still passes: `npm test`
+- [x] 1.1 Lint passes: `npm run lint` — 569e237
+- [x] 1.2 Type checking passes: `npx tsc --noEmit` — 569e237
+- [x] 1.3 Existing test suite still passes: `npm test` — 569e237
 
 #### Manual
 
-- [x] 1.4 Tapping the badge while idle shows the confirm dialog
-- [x] 1.5 Cancel dismisses with no state change
-- [x] 1.6 Log out returns to the onboarding "Connect Google Calendar" screen
-- [x] 1.7 Badge tap is a no-op while phase is not idle
-- [x] 1.8 Reconnecting after logout shows Google's account picker
+- [x] 1.4 Tapping the badge while idle shows the confirm dialog — 569e237
+- [x] 1.5 Cancel dismisses with no state change — 569e237
+- [x] 1.6 Log out returns to the onboarding "Connect Google Calendar" screen — 569e237
+- [x] 1.7 Badge tap is a no-op while phase is not idle — 569e237
+- [x] 1.8 Reconnecting after logout shows Google's account picker — 569e237

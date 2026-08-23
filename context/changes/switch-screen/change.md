@@ -1,7 +1,7 @@
 ---
 change_id: switch-screen
 title: Logout / switch Google account
-status: implementing
+status: implemented
 created: 2026-08-23
 updated: 2026-08-23
 archived_at: null
