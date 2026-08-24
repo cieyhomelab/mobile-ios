@@ -1,6 +1,6 @@
 import { openBrowserAsync } from 'expo-web-browser';
 import { useCallback, useEffect, useState } from 'react';
-import { ActivityIndicator, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
+import { ActivityIndicator, Alert, Pressable, ScrollView, StyleSheet, Text, TextInput, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
@@ -37,19 +37,30 @@ export default function SettingsScreen() {
   const [anthropicError, setAnthropicError] = useState<string | null>(null);
   const [anthropicSaving, setAnthropicSaving] = useState(false);
 
-  useEffect(() => {
+  const [loadError, setLoadError] = useState<string | null>(null);
+
+  const loadStatuses = useCallback(() => {
     void (async () => {
-      const [elHas, anHas, voiceId] = await Promise.all([
-        hasElevenLabsKey(),
-        hasAnthropicKey(),
-        getElevenLabsVoiceId(),
-      ]);
-      setElevenLabsStatus({ connected: elHas });
-      setAnthropicStatus({ connected: anHas });
-      setVoiceIdInput(voiceId);
-      setShowExplainer(!elHas && !anHas);
+      try {
+        setLoadError(null);
+        const [elHas, anHas, voiceId] = await Promise.all([
+          hasElevenLabsKey(),
+          hasAnthropicKey(),
+          getElevenLabsVoiceId(),
+        ]);
+        setElevenLabsStatus({ connected: elHas });
+        setAnthropicStatus({ connected: anHas });
+        setVoiceIdInput(voiceId);
+        setShowExplainer(!elHas && !anHas);
+      } catch {
+        setLoadError("Couldn't load your saved keys. Tap Retry to try again.");
+      }
     })();
   }, []);
+
+  useEffect(() => {
+    loadStatuses();
+  }, [loadStatuses]);
 
   const handleSaveElevenLabsKey = useCallback(() => {
     const trimmed = elevenLabsKeyInput.trim();
@@ -71,11 +82,20 @@ export default function SettingsScreen() {
   }, [elevenLabsKeyInput]);
 
   const handleRemoveElevenLabsKey = useCallback(() => {
-    void (async () => {
-      await clearElevenLabsKey();
-      setElevenLabsStatus({ connected: false });
-      setElevenLabsError(null);
-    })();
+    Alert.alert('Remove ElevenLabs key?', 'Voice recording and playback will stop working until you add a key again.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: () => {
+          void (async () => {
+            await clearElevenLabsKey();
+            setElevenLabsStatus({ connected: false });
+            setElevenLabsError(null);
+          })();
+        },
+      },
+    ]);
   }, []);
 
   const handleSaveVoiceId = useCallback(() => {
@@ -113,11 +133,20 @@ export default function SettingsScreen() {
   }, [anthropicKeyInput]);
 
   const handleRemoveAnthropicKey = useCallback(() => {
-    void (async () => {
-      await clearAnthropicKey();
-      setAnthropicStatus({ connected: false });
-      setAnthropicError(null);
-    })();
+    Alert.alert('Remove Anthropic key?', 'Voice commands will stop working until you add a key again.', [
+      { text: 'Cancel', style: 'cancel' },
+      {
+        text: 'Remove',
+        style: 'destructive',
+        onPress: () => {
+          void (async () => {
+            await clearAnthropicKey();
+            setAnthropicStatus({ connected: false });
+            setAnthropicError(null);
+          })();
+        },
+      },
+    ]);
   }, []);
 
   const openLink = useCallback((url: string) => {
@@ -129,6 +158,17 @@ export default function SettingsScreen() {
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.scrollContent}>
           <Text style={styles.headline}>Settings</Text>
+
+          {loadError !== null && (
+            <View style={styles.explainerCard}>
+              <Text style={styles.errorText}>{loadError}</Text>
+              <Pressable
+                onPress={loadStatuses}
+                style={({ pressed }) => [styles.secondaryButton, styles.retryButton, pressed && styles.pressed]}>
+                <Text style={styles.secondaryButtonText}>Retry</Text>
+              </Pressable>
+            </View>
+          )}
 
           {showExplainer && (
             <View style={styles.explainerCard}>
@@ -396,6 +436,10 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     color: VoiceColors.textPrimary,
+  },
+  retryButton: {
+    alignSelf: 'flex-start',
+    marginTop: Spacing.two,
   },
   pressed: {
     opacity: 0.75,

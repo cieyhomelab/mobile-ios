@@ -13,8 +13,12 @@ export function useByokStatus(): ByokStatus {
 
   useEffect(() => {
     void (async () => {
-      const ready = await hasRequiredKeys();
-      setState(ready ? 'ready' : 'missing');
+      try {
+        const ready = await hasRequiredKeys();
+        setState(ready ? 'ready' : 'missing');
+      } catch {
+        setState('missing');
+      }
     })();
   }, []);
 

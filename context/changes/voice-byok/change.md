@@ -1,7 +1,7 @@
 ---
 change_id: voice-byok
 title: User-entered API keys in the app (BYOK)
-status: implemented
+status: impl_reviewed
 created: 2026-08-24
 updated: 2026-08-24
 archived_at: null
