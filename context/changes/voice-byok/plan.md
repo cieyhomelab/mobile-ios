@@ -413,17 +413,17 @@ Not applicable — the app has no shipped installs yet, so there's no existing u
 
 #### Automated
 
-- [x] 5.1 No remaining references outside the historical spec: `git grep -n "EXPO_PUBLIC_ELEVENLABS_API_KEY\|EXPO_PUBLIC_ANTHROPIC_API_KEY\|EXPO_PUBLIC_ELEVENLABS_VOICE_ID" -- . ':!context/changes/voice-byok/'` returns nothing (adapted exclusion to cover the whole change folder — see phase notes)
+- [x] 5.1 No remaining references outside the historical spec: `git grep -n "EXPO_PUBLIC_ELEVENLABS_API_KEY\|EXPO_PUBLIC_ANTHROPIC_API_KEY\|EXPO_PUBLIC_ELEVENLABS_VOICE_ID" -- . ':!context/changes/voice-byok/'` returns nothing (adapted exclusion to cover the whole change folder — see phase notes) — 1611c6c
 
 #### Manual
 
-- [x] 5.2 README's setup instructions read correctly end-to-end for a new contributor
+- [x] 5.2 README's setup instructions read correctly end-to-end for a new contributor — 1611c6c
 
 ### Phase 6: Release-build verification (gated)
 
 #### Manual
 
-- [ ] 6.1 Fresh `expo prebuild --clean` + `expo run:ios` completes and the app runs
-- [ ] 6.2 A release-configuration build produces an `.ipa`/archive
-- [ ] 6.3 `grep` of the unzipped `.ipa`'s `Payload/` for key patterns returns zero matches
-- [ ] 6.4 On-device smoke test on the release build: redirect, unlock, full voice flows, and key-removal lock all behave correctly
+- [x] 6.1 Fresh `expo prebuild --clean` + `expo run:ios` completes and the app runs
+- [x] 6.2 A release-configuration build produces an `.ipa`/archive
+- [x] 6.3 `grep` of the unzipped `.ipa`'s `Payload/` for key patterns returns zero matches
+- [x] 6.4 On-device smoke test on the release build: redirect, unlock, full voice flows, and key-removal lock all behave correctly
