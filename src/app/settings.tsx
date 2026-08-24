@@ -156,7 +156,7 @@ export default function SettingsScreen() {
   return (
     <View style={styles.root}>
       <SafeAreaView style={styles.safeArea}>
-        <ScrollView contentContainerStyle={styles.scrollContent}>
+        <ScrollView contentContainerStyle={styles.scrollContent} automaticallyAdjustKeyboardInsets>
           <Text style={styles.headline}>Settings</Text>
 
           {loadError !== null && (
