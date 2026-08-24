@@ -423,7 +423,7 @@ Not applicable — the app has no shipped installs yet, so there's no existing u
 
 #### Manual
 
-- [x] 6.1 Fresh `expo prebuild --clean` + `expo run:ios` completes and the app runs
-- [x] 6.2 A release-configuration build produces an `.ipa`/archive
-- [x] 6.3 `grep` of the unzipped `.ipa`'s `Payload/` for key patterns returns zero matches
-- [x] 6.4 On-device smoke test on the release build: redirect, unlock, full voice flows, and key-removal lock all behave correctly
+- [x] 6.1 Fresh `expo prebuild --clean` + `expo run:ios` completes and the app runs — dcc3ae8
+- [x] 6.2 A release-configuration build produces an `.ipa`/archive — dcc3ae8
+- [x] 6.3 `grep` of the unzipped `.ipa`'s `Payload/` for key patterns returns zero matches — dcc3ae8
+- [x] 6.4 On-device smoke test on the release build: redirect, unlock, full voice flows, and key-removal lock all behave correctly — dcc3ae8
