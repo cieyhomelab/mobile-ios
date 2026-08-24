@@ -374,25 +374,25 @@ Not applicable — the app has no shipped installs yet, so there's no existing u
 
 #### Automated
 
-- [x] 2.1 Unit tests pass: `npm test`
-- [x] 2.2 Type checking passes: `npx tsc --noEmit`
-- [x] 2.3 Linting passes: `npm run lint`
-- [x] 2.4 No remaining references: `grep -r "voice-config" src/` returns nothing
+- [x] 2.1 Unit tests pass: `npm test` — d376d1e
+- [x] 2.2 Type checking passes: `npx tsc --noEmit` — d376d1e
+- [x] 2.3 Linting passes: `npm run lint` — d376d1e
+- [x] 2.4 No remaining references: `grep -r "voice-config" src/` returns nothing — d376d1e
 
 ### Phase 3: Settings screen + navigation
 
 #### Automated
 
-- [ ] 3.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 3.2 Linting passes: `npm run lint`
+- [x] 3.1 Type checking passes: `npx tsc --noEmit`
+- [x] 3.2 Linting passes: `npm run lint`
 
 #### Manual
 
-- [ ] 3.3 Entering an invalid key shows the provider's error inline and does not save the key
-- [ ] 3.4 Entering a valid key shows "Connected" (with plan name for ElevenLabs) and persists across app restart
-- [ ] 3.5 "Remove key" reverts the status line to "Not connected"
-- [ ] 3.6 The voice ID field saves a custom value and defaults to the Rachel voice ID when left blank
-- [ ] 3.7 All three provider links open the correct page in the in-app browser
+- [x] 3.3 Entering an invalid key shows the provider's error inline and does not save the key
+- [x] 3.4 Entering a valid key shows "Connected" (with plan name for ElevenLabs) and persists across app restart
+- [x] 3.5 "Remove key" reverts the status line to "Not connected"
+- [x] 3.6 The voice ID field saves a custom value and defaults to the Rachel voice ID when left blank
+- [x] 3.7 All three provider links open the correct page in the in-app browser
 
 ### Phase 4: First-launch gating & missing-key UX
 
