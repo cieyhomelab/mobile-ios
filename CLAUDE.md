@@ -9,10 +9,17 @@
   `ConfirmCreateView`, `ConfirmDeleteView`).
 - `src/lib/` — pure logic, each paired with a `*.test.ts`: Google Calendar API
   calls (`google-calendar-api.ts`), OAuth (`google-calendar-auth.ts`),
-  voice pipeline (`audio-recorder.ts`, `voice-stt.ts`, `voice-tts.ts`,
-  `voice-config.ts`), transcript→structured-data parsing via Claude tool use
-  (`event-parser.ts`), and the create/delete tool handlers that call the
-  Calendar API (`create-event-tool.ts`, `delete-event-tool.ts`).
+  voice pipeline (`audio-recorder.ts`, `voice-stt.ts`, `voice-tts.ts`),
+  transcript→structured-data parsing via Claude tool use
+  (`event-parser.ts`), the create/delete tool handlers that call the
+  Calendar API (`create-event-tool.ts`, `delete-event-tool.ts`), and
+  BYOK key storage/validation (`secure-keys.ts` — see BYOK note below).
+- **BYOK — no build-time secrets.** The ElevenLabs and Anthropic API keys are
+  user-entered, not build-time env vars: they're read/written exclusively
+  through `src/lib/secure-keys.ts` (backed by `expo-secure-store`/Keychain)
+  and entered on the Settings tab (`src/app/settings.tsx`). Never reintroduce
+  them via `.env.local`, `app.json`, or an `EXPO_PUBLIC_*` var — a release
+  build must ship with zero keys baked into the JS bundle.
 - `src/hooks/use-google-calendar-session.ts` — auth/session state machine
   (`loading` / `signedOut` / `signedIn`). Has a `DEBUG_FORCE_SIGNED_IN` const
   at the top for forcing the signed-in UI locally without real Google OAuth —

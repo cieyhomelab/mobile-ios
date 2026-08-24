@@ -398,26 +398,26 @@ Not applicable — the app has no shipped installs yet, so there's no existing u
 
 #### Automated
 
-- [x] 4.1 Type checking passes: `npx tsc --noEmit`
-- [x] 4.2 Linting passes: `npm run lint`
-- [x] 4.3 Unit tests pass: `npm test`
+- [x] 4.1 Type checking passes: `npx tsc --noEmit` — f6b4726
+- [x] 4.2 Linting passes: `npm run lint` — f6b4726
+- [x] 4.3 Unit tests pass: `npm test` — f6b4726
 
 #### Manual
 
-- [x] 4.4 Fresh install with no keys saved and Google Calendar already connected redirects straight to Settings
-- [x] 4.5 After saving both required keys and relaunching, the app opens to Home normally
-- [x] 4.6 Removing only the Anthropic key and attempting to create an event by voice shows the Anthropic banner with a working "Go to Settings" button
-- [x] 4.7 Removing only the ElevenLabs key and attempting to record or read today's events shows the ElevenLabs banner
+- [x] 4.4 Fresh install with no keys saved and Google Calendar already connected redirects straight to Settings — f6b4726
+- [x] 4.5 After saving both required keys and relaunching, the app opens to Home normally — f6b4726
+- [x] 4.6 Removing only the Anthropic key and attempting to create an event by voice shows the Anthropic banner with a working "Go to Settings" button — f6b4726
+- [x] 4.7 Removing only the ElevenLabs key and attempting to record or read today's events shows the ElevenLabs banner — f6b4726
 
 ### Phase 5: Repo cleanup
 
 #### Automated
 
-- [ ] 5.1 No remaining references outside the historical spec: `git grep -n "EXPO_PUBLIC_ELEVENLABS_API_KEY\|EXPO_PUBLIC_ANTHROPIC_API_KEY\|EXPO_PUBLIC_ELEVENLABS_VOICE_ID" -- . ':!context/changes/voice-byok/change.md'` returns nothing
+- [x] 5.1 No remaining references outside the historical spec: `git grep -n "EXPO_PUBLIC_ELEVENLABS_API_KEY\|EXPO_PUBLIC_ANTHROPIC_API_KEY\|EXPO_PUBLIC_ELEVENLABS_VOICE_ID" -- . ':!context/changes/voice-byok/'` returns nothing (adapted exclusion to cover the whole change folder — see phase notes)
 
 #### Manual
 
-- [ ] 5.2 README's setup instructions read correctly end-to-end for a new contributor
+- [x] 5.2 README's setup instructions read correctly end-to-end for a new contributor
 
 ### Phase 6: Release-build verification (gated)
 

@@ -54,13 +54,17 @@ flowchart TD
    npm install
    ```
 
-2. Add your API keys to `.env.local` in the project root:
+2. There's no build-time API key to configure. Once the app is running,
+   sign in with Google Calendar, then open the **Settings** tab and paste in
+   your own keys:
 
-   ```bash
-   EXPO_PUBLIC_ANTHROPIC_API_KEY=sk-ant-...      # console.anthropic.com/settings/keys
-   EXPO_PUBLIC_ELEVENLABS_API_KEY=...            # elevenlabs.io/app/settings/api-keys
-   EXPO_PUBLIC_ELEVENLABS_VOICE_ID=...           # elevenlabs.io/app/voice-library
-   ```
+   - an Anthropic key from [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
+   - an ElevenLabs key from [elevenlabs.io/app/settings/api-keys](https://elevenlabs.io/app/settings/api-keys) (optionally pick a voice from [elevenlabs.io/app/voice-library](https://elevenlabs.io/app/voice-library))
+
+   Each key is validated against its provider before being saved, and stored
+   in the iOS Keychain via `expo-secure-store` — never in `.env.local`,
+   `app.json`, or an `EXPO_PUBLIC_*` env var. Voice features are unavailable
+   until both keys are entered.
 
    Google Sign-In client IDs are already configured in
    `src/lib/google-calendar-auth.ts` for this project. If you fork this repo,
