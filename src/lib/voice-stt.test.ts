@@ -1,8 +1,15 @@
 import { SttApiError, transcribeAudio } from './voice-stt';
+import { getElevenLabsKey } from '@/lib/secure-keys';
 
 jest.mock('expo-file-system', () => ({
   File: jest.fn().mockImplementation((uri: string) => ({ uri })),
 }));
+
+jest.mock('@/lib/secure-keys', () => ({
+  getElevenLabsKey: jest.fn(),
+}));
+
+const mockGetElevenLabsKey = getElevenLabsKey as jest.Mock;
 
 class MockFormData {
   parts: [string, unknown][] = [];
@@ -22,6 +29,7 @@ describe('transcribeAudio', () => {
   beforeEach(() => {
     global.fetch = jest.fn();
     global.FormData = MockFormData as unknown as typeof FormData;
+    mockGetElevenLabsKey.mockResolvedValue('sk-el-123');
   });
 
   afterEach(() => {
@@ -56,5 +64,14 @@ describe('transcribeAudio', () => {
     (global.fetch as jest.Mock).mockResolvedValue({ ok: false, status: 422 });
 
     await expect(transcribeAudio('file:///tmp/recording.m4a')).rejects.toThrow(SttApiError);
+  });
+
+  it('throws when no ElevenLabs key is stored', async () => {
+    mockGetElevenLabsKey.mockResolvedValue(null);
+
+    await expect(transcribeAudio('file:///tmp/recording.m4a')).rejects.toThrow(
+      'MISSING_ELEVENLABS_KEY',
+    );
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 });

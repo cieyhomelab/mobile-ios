@@ -55,7 +55,8 @@
         {
           "microphonePermission": "This app records your voice while you hold the button to create calendar events."
         }
-      ]
+      ],
+      "expo-secure-store"
     ],
     "experiments": {
       "typedRoutes": true,

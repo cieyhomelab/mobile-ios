@@ -1,4 +1,4 @@
-import { ANTHROPIC_API_KEY } from '@/lib/voice-config';
+import { getAnthropicKey } from '@/lib/secure-keys';
 import type { DraftEvent } from '@/lib/google-calendar-api';
 
 export class ParseError extends Error {}
@@ -67,13 +67,16 @@ const EXTRACT_DELETE_TARGET_TOOL = {
 };
 
 export async function parseDeleteTargetFromTranscript(transcript: string): Promise<DeleteSearchQuery> {
+  const apiKey = await getAnthropicKey();
+  if (!apiKey) throw new Error('MISSING_ANTHROPIC_KEY');
+
   const now = new Date().toISOString();
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
-      'x-api-key': ANTHROPIC_API_KEY,
+      'x-api-key': apiKey,
       'anthropic-version': '2023-06-01',
       'content-type': 'application/json',
     },
@@ -118,13 +121,16 @@ export async function parseDeleteTargetFromTranscript(transcript: string): Promi
 }
 
 export async function parseEventFromTranscript(transcript: string): Promise<DraftEvent> {
+  const apiKey = await getAnthropicKey();
+  if (!apiKey) throw new Error('MISSING_ANTHROPIC_KEY');
+
   const now = new Date().toISOString();
   const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
   const response = await fetch('https://api.anthropic.com/v1/messages', {
     method: 'POST',
     headers: {
-      'x-api-key': ANTHROPIC_API_KEY,
+      'x-api-key': apiKey,
       'anthropic-version': '2023-06-01',
       'content-type': 'application/json',
     },
