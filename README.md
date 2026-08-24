@@ -59,7 +59,7 @@ flowchart TD
    your own keys:
 
    - an Anthropic key from [console.anthropic.com/settings/keys](https://console.anthropic.com/settings/keys)
-   - an ElevenLabs key from [elevenlabs.io/app/settings/api-keys](https://elevenlabs.io/app/settings/api-keys) (optionally pick a voice from [elevenlabs.io/app/voice-library](https://elevenlabs.io/app/voice-library))
+   - an ElevenLabs key from [elevenlabs.io/app/settings/api-keys](https://elevenlabs.io/app/settings/api-keys) (optionally pick a voice from [elevenlabs.io/app/voice-library](https://elevenlabs.io/app/voice-library)) — give it unrestricted/full permissions, since validation calls `/v1/user`, which needs "User" read access; a scoped key missing that permission fails validation even if it's otherwise valid
 
    Each key is validated against its provider before being saved, and stored
    in the iOS Keychain via `expo-secure-store` — never in `.env.local`,
