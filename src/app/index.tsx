@@ -1,4 +1,5 @@
 import { setAudioModeAsync, useAudioPlayer, useAudioPlayerStatus } from 'expo-audio';
+import { router } from 'expo-router';
 import { SymbolView, type SymbolViewProps } from 'expo-symbols';
 import { useCallback, useEffect, useState } from 'react';
 import { ActivityIndicator, Alert, Pressable, StyleSheet, Text, View } from 'react-native';
@@ -7,6 +8,7 @@ import { SafeAreaView } from 'react-native-safe-area-context';
 import { CalendarAccessNote } from '@/components/calendar-access-note';
 import { BottomTabInset, MaxContentWidth, Spacing } from '@/constants/theme';
 import { VoiceColors } from '@/constants/voice-theme';
+import { useByokStatus } from '@/hooks/use-byok-status';
 import { useGoogleCalendarSession, type GoogleCalendarSession } from '@/hooks/use-google-calendar-session';
 import { useVoiceRecorder } from '@/lib/audio-recorder';
 import { handleCreateEventTool } from '@/lib/create-event-tool';
@@ -41,8 +43,18 @@ type ScreenPhase =
   | 'confirmingDelete'
   | 'deleting';
 
+type MissingKeyProvider = 'elevenlabs' | 'anthropic';
+
+function missingKeyProviderFromError(err: unknown): MissingKeyProvider | null {
+  if (!(err instanceof Error)) return null;
+  if (err.message === 'MISSING_ELEVENLABS_KEY') return 'elevenlabs';
+  if (err.message === 'MISSING_ANTHROPIC_KEY') return 'anthropic';
+  return null;
+}
+
 function VoiceScreen() {
   const session = useGoogleCalendarSession();
+  const byok = useByokStatus();
   const recorder = useVoiceRecorder();
   const player = useAudioPlayer(null);
   const playerStatus = useAudioPlayerStatus(player);
@@ -51,6 +63,7 @@ function VoiceScreen() {
   const [deleteTarget, setDeleteTarget] = useState<EventMatch | null>(null);
   const [pipelineError, setPipelineError] = useState<string | null>(null);
   const [resultMessage, setResultMessage] = useState<string | null>(null);
+  const [missingKeyProvider, setMissingKeyProvider] = useState<MissingKeyProvider | null>(null);
 
   useEffect(() => {
     void setAudioModeAsync({ playsInSilentMode: true });
@@ -61,10 +74,17 @@ function VoiceScreen() {
     void Promise.resolve().then(() => setPhase('idle'));
   }, [phase, playerStatus.didJustFinish]);
 
+  useEffect(() => {
+    if (session.state === 'signedIn' && byok.state === 'missing') {
+      router.replace('/settings');
+    }
+  }, [session.state, byok.state]);
+
   const handlePressIn = useCallback(() => {
     if (session.state !== 'signedIn' || phase !== 'idle') return;
     setPipelineError(null);
     setResultMessage(null);
+    setMissingKeyProvider(null);
     setPhase('recording');
     recorder.start().catch((err: unknown) => {
       setPipelineError(err instanceof Error ? err.message : 'Could not start recording');
@@ -84,6 +104,12 @@ function VoiceScreen() {
         setDraft(parsed);
         setPhase('confirming');
       } catch (err) {
+        const missingKey = missingKeyProviderFromError(err);
+        if (missingKey) {
+          setMissingKeyProvider(missingKey);
+          setPhase('idle');
+          return;
+        }
         setPipelineError(err instanceof Error ? err.message : 'Something went wrong');
         setPhase('idle');
       }
@@ -110,6 +136,7 @@ function VoiceScreen() {
     if (session.state !== 'signedIn' || phase !== 'idle') return;
     setPipelineError(null);
     setResultMessage(null);
+    setMissingKeyProvider(null);
     setPhase('recordingDelete');
     recorder.start().catch((err: unknown) => {
       setPipelineError(err instanceof Error ? err.message : 'Could not start recording');
@@ -135,6 +162,12 @@ function VoiceScreen() {
         setDeleteTarget(match);
         setPhase('confirmingDelete');
       } catch (err) {
+        const missingKey = missingKeyProviderFromError(err);
+        if (missingKey) {
+          setMissingKeyProvider(missingKey);
+          setPhase('idle');
+          return;
+        }
         setPipelineError(err instanceof Error ? err.message : 'Something went wrong');
         setPhase('idle');
       }
@@ -162,6 +195,7 @@ function VoiceScreen() {
     if (session.state !== 'signedIn' || phase !== 'idle' || !accessToken) return;
     setPipelineError(null);
     setResultMessage(null);
+    setMissingKeyProvider(null);
     setPhase('fetchingToday');
     void (async () => {
       try {
@@ -174,6 +208,12 @@ function VoiceScreen() {
       } catch (err) {
         if (err instanceof CalendarApiError && err.status === 401) {
           await session.forceSignOut();
+          setPhase('idle');
+          return;
+        }
+        const missingKey = missingKeyProviderFromError(err);
+        if (missingKey) {
+          setMissingKeyProvider(missingKey);
           setPhase('idle');
           return;
         }
@@ -194,6 +234,7 @@ function VoiceScreen() {
     setDeleteTarget(null);
     setPipelineError(null);
     setResultMessage(null);
+    setMissingKeyProvider(null);
     void (async () => {
       await session.forceSignOut();
     })();
@@ -216,6 +257,7 @@ function VoiceScreen() {
             pipelineError={pipelineError}
             resultMessage={resultMessage}
             sessionError={session.error}
+            missingKeyProvider={missingKeyProvider}
             onMicPressIn={handlePressIn}
             onMicPressOut={handlePressOut}
             onReadToday={handleReadToday}
@@ -282,6 +324,7 @@ type HomeViewProps = {
   pipelineError: string | null;
   resultMessage: string | null;
   sessionError: string | null;
+  missingKeyProvider: MissingKeyProvider | null;
   onMicPressIn: () => void;
   onMicPressOut: () => void;
   onReadToday: () => void;
@@ -296,6 +339,7 @@ function HomeView({
   pipelineError,
   resultMessage,
   sessionError,
+  missingKeyProvider,
   onMicPressIn,
   onMicPressOut,
   onReadToday,
@@ -380,9 +424,15 @@ function HomeView({
             loading={phase === 'transcribingDelete' || phase === 'findingEvent' || phase === 'deleting'}
           />
         </View>
-        {pipelineError !== null && <Text style={styles.messageText}>{pipelineError}</Text>}
-        {resultMessage !== null && <Text style={styles.messageText}>{resultMessage}</Text>}
-        {sessionError !== null && <Text style={styles.messageText}>{sessionError}</Text>}
+        {missingKeyProvider !== null ? (
+          <MissingApiKeyBanner provider={missingKeyProvider} />
+        ) : (
+          <>
+            {pipelineError !== null && <Text style={styles.messageText}>{pipelineError}</Text>}
+            {resultMessage !== null && <Text style={styles.messageText}>{resultMessage}</Text>}
+            {sessionError !== null && <Text style={styles.messageText}>{sessionError}</Text>}
+          </>
+        )}
       </View>
     </View>
   );
@@ -419,6 +469,21 @@ function ActionTile({ icon, label, onPress, onPressIn, onPressOut, disabled, hig
       )}
       <Text style={styles.actionTileLabel}>{label}</Text>
     </Pressable>
+  );
+}
+
+function MissingApiKeyBanner({ provider }: { provider: MissingKeyProvider }) {
+  const providerLabel = provider === 'elevenlabs' ? 'ElevenLabs' : 'Anthropic';
+
+  return (
+    <View style={styles.missingKeyBanner}>
+      <Text style={styles.messageText}>Add your {providerLabel} key in Settings</Text>
+      <Pressable
+        onPress={() => router.navigate('/settings')}
+        style={({ pressed }) => [styles.secondaryButton, pressed && styles.pressed]}>
+        <Text style={styles.secondaryButtonText}>Go to Settings</Text>
+      </Pressable>
+    </View>
   );
 }
 
@@ -799,6 +864,11 @@ const styles = StyleSheet.create({
     fontSize: 13,
     color: VoiceColors.textSecondary,
     textAlign: 'center',
+    marginTop: Spacing.two,
+  },
+  missingKeyBanner: {
+    alignItems: 'center',
+    gap: Spacing.two,
     marginTop: Spacing.two,
   },
 

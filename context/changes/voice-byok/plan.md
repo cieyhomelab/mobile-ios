@@ -383,31 +383,31 @@ Not applicable — the app has no shipped installs yet, so there's no existing u
 
 #### Automated
 
-- [x] 3.1 Type checking passes: `npx tsc --noEmit`
-- [x] 3.2 Linting passes: `npm run lint`
+- [x] 3.1 Type checking passes: `npx tsc --noEmit` — bde081b
+- [x] 3.2 Linting passes: `npm run lint` — bde081b
 
 #### Manual
 
-- [x] 3.3 Entering an invalid key shows the provider's error inline and does not save the key
-- [x] 3.4 Entering a valid key shows "Connected" (with plan name for ElevenLabs) and persists across app restart
-- [x] 3.5 "Remove key" reverts the status line to "Not connected"
-- [x] 3.6 The voice ID field saves a custom value and defaults to the Rachel voice ID when left blank
-- [x] 3.7 All three provider links open the correct page in the in-app browser
+- [x] 3.3 Entering an invalid key shows the provider's error inline and does not save the key — bde081b
+- [x] 3.4 Entering a valid key shows "Connected" (with plan name for ElevenLabs) and persists across app restart — bde081b
+- [x] 3.5 "Remove key" reverts the status line to "Not connected" — bde081b
+- [x] 3.6 The voice ID field saves a custom value and defaults to the Rachel voice ID when left blank — bde081b
+- [x] 3.7 All three provider links open the correct page in the in-app browser — bde081b
 
 ### Phase 4: First-launch gating & missing-key UX
 
 #### Automated
 
-- [ ] 4.1 Type checking passes: `npx tsc --noEmit`
-- [ ] 4.2 Linting passes: `npm run lint`
-- [ ] 4.3 Unit tests pass: `npm test`
+- [x] 4.1 Type checking passes: `npx tsc --noEmit`
+- [x] 4.2 Linting passes: `npm run lint`
+- [x] 4.3 Unit tests pass: `npm test`
 
 #### Manual
 
-- [ ] 4.4 Fresh install with no keys saved and Google Calendar already connected redirects straight to Settings
-- [ ] 4.5 After saving both required keys and relaunching, the app opens to Home normally
-- [ ] 4.6 Removing only the Anthropic key and attempting to create an event by voice shows the Anthropic banner with a working "Go to Settings" button
-- [ ] 4.7 Removing only the ElevenLabs key and attempting to record or read today's events shows the ElevenLabs banner
+- [x] 4.4 Fresh install with no keys saved and Google Calendar already connected redirects straight to Settings
+- [x] 4.5 After saving both required keys and relaunching, the app opens to Home normally
+- [x] 4.6 Removing only the Anthropic key and attempting to create an event by voice shows the Anthropic banner with a working "Go to Settings" button
+- [x] 4.7 Removing only the ElevenLabs key and attempting to record or read today's events shows the ElevenLabs banner
 
 ### Phase 5: Repo cleanup
 
