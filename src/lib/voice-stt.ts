@@ -1,6 +1,6 @@
 import { File } from 'expo-file-system';
 
-import { ELEVENLABS_API_KEY } from '@/lib/voice-config';
+import { getElevenLabsKey } from '@/lib/secure-keys';
 
 export class SttApiError extends Error {
   status: number;
@@ -12,6 +12,9 @@ export class SttApiError extends Error {
 }
 
 export async function transcribeAudio(fileUri: string): Promise<string> {
+  const apiKey = await getElevenLabsKey();
+  if (!apiKey) throw new Error('MISSING_ELEVENLABS_KEY');
+
   const formData = new FormData();
   formData.append('file', new File(fileUri));
   formData.append('model_id', 'scribe_v2');
@@ -19,7 +22,7 @@ export async function transcribeAudio(fileUri: string): Promise<string> {
 
   const response = await fetch('https://api.elevenlabs.io/v1/speech-to-text', {
     method: 'POST',
-    headers: { 'xi-api-key': ELEVENLABS_API_KEY },
+    headers: { 'xi-api-key': apiKey },
     body: formData,
   });
 

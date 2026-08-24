@@ -366,18 +366,18 @@ Not applicable — the app has no shipped installs yet, so there's no existing u
 
 #### Automated
 
-- [x] 1.1 Unit tests pass: `npm test -- secure-keys.test.ts`
-- [x] 1.2 Type checking passes: `npx tsc --noEmit`
-- [x] 1.3 Linting passes: `npm run lint`
+- [x] 1.1 Unit tests pass: `npm test -- secure-keys.test.ts` — 60fcc4b
+- [x] 1.2 Type checking passes: `npx tsc --noEmit` — 60fcc4b
+- [x] 1.3 Linting passes: `npm run lint` — 60fcc4b
 
 ### Phase 2: Wire storage into the pipeline
 
 #### Automated
 
-- [ ] 2.1 Unit tests pass: `npm test`
-- [ ] 2.2 Type checking passes: `npx tsc --noEmit`
-- [ ] 2.3 Linting passes: `npm run lint`
-- [ ] 2.4 No remaining references: `grep -r "voice-config" src/` returns nothing
+- [x] 2.1 Unit tests pass: `npm test`
+- [x] 2.2 Type checking passes: `npx tsc --noEmit`
+- [x] 2.3 Linting passes: `npm run lint`
+- [x] 2.4 No remaining references: `grep -r "voice-config" src/` returns nothing
 
 ### Phase 3: Settings screen + navigation
 

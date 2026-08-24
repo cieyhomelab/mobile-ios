@@ -1,8 +1,16 @@
 import { ParseError, parseDeleteTargetFromTranscript, parseEventFromTranscript } from './event-parser';
+import { getAnthropicKey } from '@/lib/secure-keys';
+
+jest.mock('@/lib/secure-keys', () => ({
+  getAnthropicKey: jest.fn(),
+}));
+
+const mockGetAnthropicKey = getAnthropicKey as jest.Mock;
 
 describe('parseEventFromTranscript', () => {
   beforeEach(() => {
     global.fetch = jest.fn();
+    mockGetAnthropicKey.mockResolvedValue('sk-ant-123');
   });
 
   it('sends the correct forced tool-use request shape', async () => {
@@ -82,11 +90,21 @@ describe('parseEventFromTranscript', () => {
 
     await expect(parseEventFromTranscript('Book a meeting tomorrow at 3pm')).rejects.toThrow(ParseError);
   });
+
+  it('throws when no Anthropic key is stored', async () => {
+    mockGetAnthropicKey.mockResolvedValue(null);
+
+    await expect(parseEventFromTranscript('Book a meeting tomorrow at 3pm')).rejects.toThrow(
+      'MISSING_ANTHROPIC_KEY',
+    );
+    expect(global.fetch).not.toHaveBeenCalled();
+  });
 });
 
 describe('parseDeleteTargetFromTranscript', () => {
   beforeEach(() => {
     global.fetch = jest.fn();
+    mockGetAnthropicKey.mockResolvedValue('sk-ant-123');
   });
 
   it('sends the correct forced tool-use request shape', async () => {
@@ -195,5 +213,14 @@ describe('parseDeleteTargetFromTranscript', () => {
     (global.fetch as jest.Mock).mockResolvedValue({ ok: false, status: 500 });
 
     await expect(parseDeleteTargetFromTranscript('Delete my dentist appointment')).rejects.toThrow(ParseError);
+  });
+
+  it('throws when no Anthropic key is stored', async () => {
+    mockGetAnthropicKey.mockResolvedValue(null);
+
+    await expect(parseDeleteTargetFromTranscript('Delete my dentist appointment')).rejects.toThrow(
+      'MISSING_ANTHROPIC_KEY',
+    );
+    expect(global.fetch).not.toHaveBeenCalled();
   });
 });
