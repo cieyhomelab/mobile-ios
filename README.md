@@ -51,8 +51,12 @@ flowchart TD
 1. Install dependencies
 
    ```bash
-   npm install
+   npm ci
    ```
+
+   Use `npm ci` rather than `npm install` on a fresh clone — it installs
+   exactly what's in `package-lock.json` and fails loudly instead of
+   silently re-resolving versions.
 
 2. There's no build-time API key to configure. Once the app is running,
    sign in with Google Calendar, then open the **Settings** tab and paste in
@@ -75,9 +79,16 @@ flowchart TD
    `expo-symbols`, native tabs), so use a real build rather than Expo Go or web:
 
    ```bash
-   npx expo run:ios       # or: npm run ios
-   npx expo run:android   # or: npm run android
+   npm run ios
+   npm run android
    ```
+
+   Prefer these over a bare `npx expo run:ios`/`run:android`: `npx` can
+   resolve an unexpected `expo` CLI (a stale global install or npx's own
+   cache) instead of this project's local one, which has previously
+   silently downgraded `package.json` to an old Expo SDK and broken the
+   build. `npm run ios`/`android` always uses the local, `package.json`-pinned
+   version.
 
    `npx expo start --web` also works for previewing layout/screens quickly,
    but Google Sign-In and audio recording aren't available there.
