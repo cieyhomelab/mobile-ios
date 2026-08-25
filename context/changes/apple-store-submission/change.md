@@ -180,6 +180,35 @@ attempt stays debuggable by hand rather than through CI logs.
 
 ---
 
+## Note — stray local install issues blocked `expo run:ios`, now fixed (2026-08-25)
+
+Unrelated to the phases above, but logged here since it blocked local iOS builds while
+working this change:
+
+1. `$HOME` (`/Users/maciejkulesza`) had a stray, unrelated `hash.js` script plus its own
+   `package.json` (`main: hash.js`), `node_modules`, and `.expo` cache — from an npm
+   install run in the wrong directory at some point. Running Expo commands from `$HOME`
+   instead of the project directory made Metro treat `hash.js` as the entry point,
+   failing with `Unable to resolve module crypto` (Node's `crypto` isn't polyfilled in
+   the RN/Metro environment). Fixed by deleting the stray files; always `cd` into the
+   project before running `expo`/`npm` commands.
+2. A separate fresh clone at `~/mobile-ios` had its `package.json` silently rewritten
+   (uncommitted) to SDK-46-era dependency versions (`expo ~46.0.21`, `react-native
+   0.69.9`, `react 18.0.0`, etc.) after running `npx expo run:ios` — likely `npx`
+   resolving a stale/cached `expo` CLI instead of the project's own. The old
+   prebuild-config didn't understand the new `./assets/expo.icon` Icon Composer bundle,
+   producing `Invalid mimeType for image with source: ./assets/expo.icon` during
+   prebuild. Fixed by resetting `package.json`/`package-lock.json` to the committed
+   versions, clearing `node_modules`/`ios`/generated files, and reinstalling clean
+   (`expo` now correctly resolves to `57.0.15`). Also found and removed a plaintext
+   GitHub PAT in that clone's `.npmrc`, unrecognized by the user — flagged for
+   revocation on GitHub.
+
+**Takeaway:** if a stale global/npx cache is ever suspected again, prefer `npm run ios`
+(or another explicit local binary invocation) over a bare `npx expo ...`.
+
+---
+
 ## Open questions / decisions for the user
 
 1. **Google OAuth consent mode** — this plan assumes Production/verified is now
