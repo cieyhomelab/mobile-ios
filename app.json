@@ -11,7 +11,8 @@
       "icon": "./assets/expo.icon",
       "bundleIdentifier": "com.mkulesza.voiceassistant",
       "infoPlist": {
-        "NSMicrophoneUsageDescription": "This app records your voice while you hold the button to create calendar events."
+        "NSMicrophoneUsageDescription": "This app records your voice while you hold the button to create calendar events.",
+        "NSLocalNetworkUsageDescription": "Used during development to connect to the local Metro bundler."
       }
     },
     "android": {

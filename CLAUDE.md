@@ -79,3 +79,24 @@
   <id>` before a run will succeed; `xctrace`'s "Offline" listing doesn't
   always reflect a just-reconnected device — trust `devicectl` for current
   connection state.
+- **First install on a physical device needs a manual trust tap, or launch
+  fails with a code-signing error.** After `expo run:ios` finishes installing
+  (build succeeds, `xcrun devicectl device process launch` exits non-zero
+  with "invalid code signature, inadequate entitlements or its profile has
+  not been explicitly trusted by the user"), go to the device's Settings →
+  General → VPN & Device Management, open the developer profile, and tap
+  "Trust". Only needed once per dev-cert/device pair; re-run the same command
+  afterward (a `--binary` reuse of the just-installed `.app` is enough, no
+  rebuild required).
+- **`devicectl`-launched builds don't get `localhost` forwarded from device
+  to Mac, even over a wired USB connection** (`transportType: wired` in
+  `devicectl device info details` does NOT imply the old `usbmuxd`/
+  `ios-deploy` port-forwarding behavior). The app's baked-in bundler URL
+  defaults to `localhost:8081`, which on-device resolves to the phone itself,
+  producing a red "No script URL provided" screen even though Metro is
+  running fine on the Mac. Fix: rebuild with the Mac's LAN IP forced in as
+  the packager host, e.g. `REACT_NATIVE_PACKAGER_HOSTNAME=$(ipconfig
+  getifaddr en0) npx expo run:ios --device <id> --port <port>` — requires
+  phone and Mac on the same network. A `--binary` reuse won't fix this since
+  the host is baked in at build time (same root cause as the stale-port
+  gotcha above).
