@@ -33,6 +33,28 @@ carries Android config.
 
 ---
 
+## Current status (2026-08-25)
+
+Phases 1–5 are fully implementable without Phase 0 and are done. Phase 6
+onward is a hard wall: every one of those phases needs either the Apple
+Distribution Certificate/Provisioning Profile or the App Store Connect app
+record, both of which only exist after Apple Developer Program enrollment —
+there's no way to sequence around that.
+
+| Phase | Depends on Phase 0? | Status |
+| --- | --- | --- |
+| **1** — app.json scaffold fixes | No | ✅ Done |
+| **2** — Privacy policy | No (writing/hosting is independent) | ✅ Done. *Only* the "fill in App Store Connect's App Privacy questionnaire" sub-item needs the app record from Phase 0 — that's still pending, but it's a small piece of Phase 2, not the whole phase. |
+| **3** — Google OAuth consent screen | No — entirely Google Cloud Console, unrelated to Apple | Code check done; manual Google Console steps remain, not blocked by Phase 0 |
+| **4** — Pre-release code checklist | Mostly no | `DEBUG_FORCE_SIGNED_IN`, `TEMP DEBUG` grep, lint/typecheck/test all ✅ done. Only the BYOK binary-leak grep is blocked — but that's blocked by **Phase 7's `.ipa`**, which is itself blocked by Phase 6/0 |
+| **5** — Install & configure EAS | No — needs an Expo account, not Apple | ✅ Done |
+| **6** — iOS credentials | **Yes, directly** | Can't create a real Apple Distribution Certificate/Provisioning Profile without active membership |
+| **7** — Build | **Yes, transitively** (needs Phase 6's certs) | Blocked |
+| **8** — TestFlight internal test | **Yes, transitively + directly** (needs a signed build and an App Store Connect app record) | Blocked |
+| **9** — App Store Connect listing | **Yes, directly** (needs the app record) | Blocked |
+| **10** — Submit for review | **Yes, transitively** (needs everything above) | Blocked |
+| **11** — parked/CI | Out of scope for this change regardless | N/A |
+
 ## Phase 0 — Apple Developer & App Store Connect setup
 
 1. Enroll in the Apple Developer Program ($99/yr) if not already active.
